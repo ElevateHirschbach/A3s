@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A3 &amp; PDCA Problem Solving — Hirschbach Process Improvement</title>
+    <style>
+        @font-face { font-family: 'Gilroy'; font-weight: 400; src: local('Gilroy Regular'), local('Gilroy-Regular'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 700; src: local('Gilroy Bold'), local('Gilroy-Bold'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 800; src: local('Gilroy ExtraBold'), local('Gilroy-ExtraBold'); }
+
+        :root {
+            --green-bg: #2d5a27;
+            --green-current: #4a7c43;
+            --red-problem: #a62c21;
+            --red-root: #8b2920;
+            --blue-goals: #1a4a4a;
+            --blue-counter: #1e3a5f;
+            --blue-implement: #234b73;
+            --slate-validate: #4a6670;
+            --section-bg-left: #d4dfe4;
+            --section-bg-right: #e8eef1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #374151;
+            --hirschbach-orange: #e87722;
+            --hirschbach-dark: #2b2b2b;
+            --pdca-plan: #1e3a5f;
+            --pdca-do: #2d5a27;
+            --pdca-check: #e87722;
+            --pdca-act: #a62c21;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Gilroy', 'Inter', -apple-system, sans-serif;
+            background: #f5f5f5;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .page { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+        /* ── Top Bar ── */
+
+        /* ── Hero ── */
+
+        /* ── Section Divider ── */
+        .section-divider {
+            display: flex; align-items: center; gap: 14px;
+            padding: 40px 0 20px; animation: fadeUp 0.5s ease 0.1s both;
+        }
+        .section-divider .line { flex: 1; height: 1px; background: #ccc; }
+        .section-divider .label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 2px; color: #999; white-space: nowrap;
+        }
+        .section-divider .count {
+            background: #e0e0e0; color: #666; font-size: 10px; font-weight: 700;
+            padding: 2px 10px; border-radius: 10px;
+        }
+
+        /* ══════════ DECISION GUIDE BLOCK ══════════ */
+        .guide-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+            animation: fadeUp 0.5s ease 0.12s both;
+        }
+
+        /* Decision card */
+        .decision-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+        }
+        .decision-card h3 {
+            font-size: 14px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-primary); margin-bottom: 12px;
+        }
+        .decision-question {
+            font-size: 15px; font-weight: 700; color: var(--text-primary);
+            line-height: 1.5; margin-bottom: 18px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-left: 4px solid var(--blue-counter);
+            border-radius: 0 8px 8px 0;
+        }
+        .decision-options {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .decision-opt {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px; border-radius: 8px;
+            font-size: 14px; font-weight: 600;
+        }
+        .opt-yes {
+            background: #d1fae5; color: #065f46;
+        }
+        .opt-no {
+            background: #dbeafe; color: #1e3a5f;
+        }
+        .opt-arrow { font-size: 18px; font-weight: 800; opacity: 0.5; }
+
+        /* Comparison side-by-side */
+        .compare-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .compare-header {
+            display: grid; grid-template-columns: 1fr 1fr;
+        }
+        .compare-header div {
+            padding: 14px 20px;
+            font-size: 13px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: white; text-align: center;
+        }
+        .compare-body {
+            display: grid; grid-template-columns: 1fr 1fr;
+            flex: 1;
+        }
+        .compare-col {
+            padding: 16px 20px;
+            font-size: 12px; line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        .compare-col:first-child { border-right: 1px solid #eee; }
+        .compare-icon { font-size: 22px; margin-bottom: 6px; display: block; }
+        .compare-analogy {
+            margin-top: 10px; padding: 8px 12px;
+            border-radius: 6px; font-weight: 600;
+            font-size: 12px; text-align: center;
+        }
+        .analogy-a3 { background: #dbeafe; color: #1e3a5f; }
+        .analogy-pdca { background: #d1fae5; color: #065f46; }
+
+        /* ══════════ TEMPLATE CARDS (horizontal) ══════════ */
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 8px;
+            animation: fadeUp 0.5s ease 0.18s both;
+        }
+
+        .tpl-card {
+            background: white; border: 1px solid #ddd; border-radius: 12px;
+            overflow: hidden; text-decoration: none; color: inherit;
+            transition: all 0.25s ease; display: flex; flex-direction: row;
+        }
+        .tpl-card:hover {
+            border-color: #bbb; transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+        }
+        .tpl-icon {
+            width: 100px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; color: white;
+        }
+        .tpl-card-body { flex: 1; padding: 16px 18px 14px; }
+        .tpl-title {
+            font-size: 15px; font-weight: 700; margin-bottom: 4px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .tpl-title .arrow {
+            font-size: 14px; color: #ccc; transition: all 0.25s ease;
+        }
+        .tpl-card:hover .tpl-title .arrow { color: var(--text-primary); transform: translateX(3px); }
+        .tpl-desc { font-size: 11px; line-height: 1.5; color: var(--text-secondary); margin-bottom: 8px; }
+        .tpl-meta { display: flex; gap: 8px; align-items: center; font-size: 10px; color: #999; }
+        .tpl-tag {
+            padding: 2px 8px; border-radius: 4px; font-weight: 700;
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: white;
+        }
+
+        /* ══════════ IMAGE CARD GRID ══════════ */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+            gap: 16px; padding-bottom: 16px;
+        }
+        .card {
+            background: white; border: 1px solid #ddd; border-radius: 12px;
+            text-decoration: none; color: inherit; transition: all 0.25s ease;
+            overflow: hidden; animation: fadeUp 0.5s ease both;
+        }
+        .card:nth-child(1) { animation-delay: 0.12s; }
+        .card:nth-child(2) { animation-delay: 0.18s; }
+        .card:nth-child(3) { animation-delay: 0.24s; }
+        .card:nth-child(4) { animation-delay: 0.30s; }
+        .card:hover {
+            border-color: #bbb; transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+        .card-img {
+            width: 100%; aspect-ratio: 1/1; object-fit: cover;
+            display: block; border-bottom: 1px solid #eee;
+        }
+        .card-body { padding: 16px 18px 14px; }
+        .card-title {
+            font-size: 15px; font-weight: 700; letter-spacing: -0.2px;
+            margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-title .arrow {
+            font-size: 14px; color: #ccc; transition: all 0.25s ease; flex-shrink: 0; margin-left: 6px;
+        }
+        .card:hover .card-title .arrow { color: var(--text-primary); transform: translateX(3px); }
+        .card-desc { font-size: 11px; line-height: 1.5; color: var(--text-secondary); margin-bottom: 10px; }
+        .card-meta { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #999; }
+        .card-tag {
+            padding: 2px 8px; border-radius: 4px; font-weight: 700;
+            font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: white; flex-shrink: 0;
+        }
+        .tag-active { background: var(--green-bg); }
+        .tag-completed { background: var(--slate-validate); }
+        .tag-upcoming { background: var(--blue-counter); }
+
+        .card.card-upcoming { opacity: 0.82; }
+        .card.card-upcoming:hover { opacity: 1; }
+        .card.card-done .card-img { filter: saturate(0.8); transition: filter 0.25s ease; }
+        .card.card-done:hover .card-img { filter: saturate(1); }
+
+        /* ── Footer ── */
+        .footer {
+            padding: 28px 0 40px; border-top: 1px solid #ddd;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; color: #999; animation: fadeUp 0.5s ease 0.5s both;
+        }
+        .footer strong { color: var(--text-secondary); }
+        .footer-motto { font-style: italic; opacity: 0.8; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 800px) {
+            .page { padding: 0 18px; }
+            .guide-block, .template-grid { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr 1fr; }
+            .tpl-card { flex-direction: column; }
+            .tpl-icon { width: 100%; height: 60px; }
+        }
+        @media (max-width: 500px) {
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page">
+
+        <!-- ══════════ Page Title ══════════ -->
+        <div style="padding: 44px 0 12px; animation: fadeUp 0.5s ease both;">
+            <h1 style="font-size: clamp(34px, 5vw, 52px); font-weight: 800; line-height: 1.1; letter-spacing: -1px; color: var(--text-primary);">Problem Solving Portal</h1>
+        </div>
+
+        <!-- ══════════ WHICH TOOL? — Decision Guide ══════════ -->
+        <div class="section-divider">
+            <span class="label">Which Tool Should I Use?</span>
+            <div class="line"></div>
+        </div>
+
+        <div class="guide-block">
+
+            <!-- Decision Question -->
+            <div class="decision-card">
+                <h3>🧭 Quick Decision</h3>
+                <div class="decision-question">
+                    "Can your department fix this without needing another department to change what they do?"
+                </div>
+                <div class="decision-options">
+                    <div class="decision-opt opt-yes">
+                        <span class="opt-arrow">→</span>
+                        <div><strong>Yes</strong> — Use <strong>PDCA</strong>. Your team owns the problem and the solution.</div>
+                    </div>
+                    <div class="decision-opt opt-no">
+                        <span class="opt-arrow">→</span>
+                        <div><strong>No</strong> — Use <strong>A3</strong>. You need multiple departments to coordinate on a solution.</div>
+                    </div>
+                    <div class="decision-opt" style="background: #fef2f2; border-left: 4px solid #c0392b;">
+                        <span class="opt-arrow">→</span>
+                        <div><strong>Not sure what's causing it?</strong> — Start with the <strong>5 Why</strong> template to find the root cause first, then pick A3 or PDCA.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side-by-Side Comparison -->
+            <div class="compare-card">
+                <div class="compare-header">
+                    <div style="background: var(--blue-counter);">A3 Problem Solving</div>
+                    <div style="background: var(--green-bg);">PDCA Cycle</div>
+                    <div style="background: #c0392b;">5 Why Analysis</div>
+                </div>
+                <div class="compare-body">
+                    <div class="compare-col">
+                        <span class="compare-icon">🏘️</span>
+                        Cross-functional problem solving that requires multiple departments to align, change processes, and collaborate on a shared solution. Used for large, complex problems that span organizational boundaries.
+                        <div class="compare-analogy analogy-a3">A3 is like building a neighborhood</div>
+                    </div>
+                    <div class="compare-col">
+                        <span class="compare-icon">🏠</span>
+                        Departmental problem solving where one team owns the problem and can implement and test changes within their own scope. Fast, iterative cycles to test and refine one countermeasure at a time.
+                        <div class="compare-analogy analogy-pdca">PDCA is like building a house</div>
+                    </div>
+                    <div class="compare-col">
+                        <span class="compare-icon">🔍</span>
+                        Root cause discovery tool. Drill past symptoms to find the real reason a problem exists. Use before A3 or PDCA when the team isn't sure what's actually causing the issue.
+                        <div class="compare-analogy" style="background: #fef2f2; color: #991b1b;">5 Why is like finding the foundation crack</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══════════ TEMPLATES ══════════ -->
+        <div class="section-divider">
+            <span class="label">Templates</span>
+            <div class="line"></div>
+        </div>
+
+        <div class="template-grid">
+            <!-- A3 Template -->
+            <a href="A3_Template.html" class="tpl-card">
+                <div class="tpl-icon" style="background: linear-gradient(135deg, var(--blue-counter), var(--blue-implement));">A3</div>
+                <div class="tpl-card-body">
+                    <div class="tpl-title">A3 Problem Solving Template <span class="arrow">→</span></div>
+                    <div class="tpl-desc">8 sections (A–H) for cross-functional teams. Background, current state, problem, root cause, goals, countermeasures, implementation, and validation.</div>
+                    <div class="tpl-meta">
+                        <span class="tpl-tag" style="background: var(--blue-counter);">Cross-Functional</span>
+                        <span>Editable · Print-ready A3 landscape</span>
+                    </div>
+                </div>
+            </a>
+            <!-- PDCA Template -->
+            <a href="PDCA_Template.html" class="tpl-card">
+                <div class="tpl-icon" style="background: linear-gradient(135deg, var(--green-bg), var(--green-current));">P D<br>C A</div>
+                <div class="tpl-card-body">
+                    <div class="tpl-title">PDCA Cycle Template <span class="arrow">→</span></div>
+                    <div class="tpl-desc">Plan–Do–Check–Act in a 2×2 layout. Problem statement, 5 Whys, action plan, results tracking, and standardize-or-adjust decision.</div>
+                    <div class="tpl-meta">
+                        <span class="tpl-tag" style="background: var(--green-bg);">Departmental</span>
+                        <span>Editable · Print-ready A3 landscape</span>
+                    </div>
+                </div>
+            </a>
+            <!-- 5 Why Template -->
+            <a href="5Why_Template.html" class="tpl-card">
+                <div class="tpl-icon" style="background: linear-gradient(135deg, #c0392b, #e87722);">5W</div>
+                <div class="tpl-card-body">
+                    <div class="tpl-title">5 Why Root Cause Analysis <span class="arrow">→</span></div>
+                    <div class="tpl-desc">Drill from symptom to root cause in 5 steps. Visual staircase guides users past surface fixes to the systemic issue — then builds an action plan to eliminate it.</div>
+                    <div class="tpl-meta">
+                        <span class="tpl-tag" style="background: #c0392b;">Root Cause</span>
+                        <span>Editable · Print-ready A3 landscape</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ══════════ ACTIVE A3 PROJECTS ══════════ -->
+        <div class="section-divider">
+            <span class="label">Active A3 Projects</span>
+            <span class="count">4</span>
+            <div class="line"></div>
+        </div>
+
+        <div class="card-grid">
+            <!-- Trailer Management -->
+            <a href="Trailer_Managment.html" class="card">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwLjgiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFhMjc0NCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE2MjEzOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iIzE0MjgzYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTMwMzAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGQiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Q0YTAzMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlOGI4NGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNvcm5lciIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZDRhMDMyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0xMCUiIHk9Ii0xMCUiIHdpZHRoPSIxMjAlIiBoZWlnaHQ9IjEyMCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI2IiBmbG9vZC1jb2xvcj0iIzAwMCIgZmxvb2Qtb3BhY2l0eT0iMC4zNSIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMzIiIHk9IjAiIHdpZHRoPSI1MzYiIGhlaWdodD0iNiIgZmlsbD0idXJsKCNnb2xkKSIgcng9IjAiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjY29ybmVyKSIgcng9IjAiLz4KICA8IS0tIFRyYWlsZXIgaWNvbiAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMDAsMTk1KSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPCEtLSBUcmFpbGVyIGJvZHkgLS0+CiAgICA8cmVjdCB4PSItNzAiIHk9Ii01MCIgd2lkdGg9IjE0MCIgaGVpZ2h0PSI3NSIgcng9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIwLjU1Ii8+CiAgICA8IS0tIFZlcnRpY2FsIHJpYnMgLS0+CiAgICA8bGluZSB4MT0iLTUwIiB5MT0iLTUwIiB4Mj0iLTUwIiB5Mj0iMjUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMjUiLz4KICAgIDxsaW5lIHgxPSItMzAiIHkxPSItNTAiIHgyPSItMzAiIHkyPSIyNSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4yNSIvPgogICAgPGxpbmUgeDE9Ii0xMCIgeTE9Ii01MCIgeDI9Ii0xMCIgeTI9IjI1IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjI1Ii8+CiAgICA8bGluZSB4MT0iMTAiIHkxPSItNTAiIHgyPSIxMCIgeTI9IjI1IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjI1Ii8+CiAgICA8bGluZSB4MT0iMzAiIHkxPSItNTAiIHgyPSIzMCIgeTI9IjI1IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjI1Ii8+CiAgICA8bGluZSB4MT0iNTAiIHkxPSItNTAiIHgyPSI1MCIgeTI9IjI1IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjI1Ii8+CiAgICA8IS0tIERPVCBwbGF0ZSAtLT4KICAgIDxyZWN0IHg9IjIwIiB5PSItMzAiIHdpZHRoPSIzOCIgaGVpZ2h0PSIyMCIgcng9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNSIvPgogICAgPHRleHQgeD0iMzkiIHk9Ii0xNiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjExIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjZDRhMDMyIiBvcGFjaXR5PSIwLjUiPkRPVDwvdGV4dD4KICAgIDwhLS0gSGl0Y2ggLS0+CiAgICA8Y2lyY2xlIGN4PSItNzgiIGN5PSI1IiByPSI3IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjQ1Ii8+CiAgICA8Y2lyY2xlIGN4PSItNzgiIGN5PSI1IiByPSIyLjUiIGZpbGw9IiM4ODk2YWEiIG9wYWNpdHk9IjAuMyIvPgogICAgPCEtLSBXaGVlbHMgLS0+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjM4IiByPSIxMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC41Ii8+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjM4IiByPSI1IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjM1Ii8+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjODg5NmFhIiBvcGFjaXR5PSIwLjMiLz4KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iMzgiIHI9IjEyIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjUiLz4KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iMzgiIHI9IjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMzUiLz4KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iMzgiIHI9IjIiIGZpbGw9IiM4ODk2YWEiIG9wYWNpdHk9IjAuMyIvPgogIDwvZz4KICA8IS0tIFRleHQgLS0+CiAgPHRleHQgeD0iMzAwIiB5PSIzNzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2MiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjQiIGZpbGw9IiNkNGEwMzIiPlRSQUlMRVI8L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI0NDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI1MiIgZm9udC13ZWlnaHQ9IjgwMCIgbGV0dGVyLXNwYWNpbmc9IjIiIGZpbGw9IiNlOGVlZjEiPk1BTkFHRU1FTlQ8L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI1MDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjYiIGZpbGw9IiM4ODk2YWEiPkNIUklTVElOQSBXT09EPC90ZXh0Pgo8L3N2Zz4K" alt="Trailer Management" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Trailer Management <span class="arrow">→</span></div>
+                    <div class="card-desc">Improving trailer data integrity, red-tag processes, and real-time fleet visibility.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-active">Active</span>
+                        <span>Planning, Operations, Maintenance</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Cargo Claims Phase II — Solutions -->
+            <a href="#" class="card card-upcoming" onclick="alert('Coming soon — this A3 is not yet published.'); return false;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxYTI3NDQiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiMxNjIxMzgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTQyODNhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNkNGEwMzIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZThiODRhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjQiIHN0ZERldmlhdGlvbj0iOCIgZmxvb2QtY29sb3I9IiMwMDAiIGZsb29kLW9wYWNpdHk9IjAuMyIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgcng9IjMyIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gR29sZCB0b3AgYmFyIC0tPgogIDxyZWN0IHg9IjMwIiB5PSIwIiB3aWR0aD0iNTQwIiBoZWlnaHQ9IjYiIHJ4PSIwIiBmaWxsPSJ1cmwoI2dvbGQpIi8+CiAgPCEtLSBMaWdodGJ1bGIgaWNvbiAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMDAsMjEwKSIgZmlsdGVyPSJ1cmwoI3NoYWRvdykiPgogICAgPCEtLSBCdWxiIGJvZHkgLS0+CiAgICA8ZWxsaXBzZSBjeD0iMCIgY3k9Ii0zMCIgcng9IjUyIiByeT0iNTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSI0IiBvcGFjaXR5PSIwLjgiLz4KICAgIDwhLS0gSW5uZXIgZ2xvdyAtLT4KICAgIDxlbGxpcHNlIGN4PSIwIiBjeT0iLTMwIiByeD0iMzYiIHJ5PSI0MCIgZmlsbD0iI2Q0YTAzMiIgb3BhY2l0eT0iMC4xNSIvPgogICAgPCEtLSBGaWxhbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0tMTIsMCBMLTEyLDIwIFEtMTIsMzIgMCwzMiBRMTIsMzIgMTIsMjAgTDEyLDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSIzLjUiIG9wYWNpdHk9IjAuNyIvPgogICAgPCEtLSBCYXNlIGxpbmVzIC0tPgogICAgPGxpbmUgeDE9Ii0xNiIgeTE9IjgiIHgyPSIxNiIgeTI9IjgiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSItMTQiIHkxPSIxNiIgeDI9IjE0IiB5Mj0iMTYiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSItMTAiIHkxPSIyNCIgeDI9IjEwIiB5Mj0iMjQiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDwhLS0gUmF5cyAtLT4KICAgIDxsaW5lIHgxPSIwIiB5MT0iLTEwMCIgeDI9IjAiIHkyPSItMTE1IiBzdHJva2U9IiNkNGEwMzIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxsaW5lIHgxPSI1MCIgeTE9Ii04NSIgeDI9IjYyIiB5Mj0iLTk2IiBzdHJva2U9IiNkNGEwMzIiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxsaW5lIHgxPSItNTAiIHkxPSItODUiIHgyPSItNjIiIHkyPSItOTYiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuNSIvPgogICAgPGxpbmUgeDE9IjY4IiB5MT0iLTQwIiB4Mj0iODIiIHkyPSItNDAiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuNCIvPgogICAgPGxpbmUgeDE9Ii02OCIgeTE9Ii00MCIgeDI9Ii04MiIgeTI9Ii00MCIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC40Ii8+CiAgICA8IS0tIFNtYWxsIGJveCBvdmVybGF5IC0tPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDIsLTEwKSI+CiAgICAgIDxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzMiIgcng9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIG9wYWNpdHk9IjAuNiIvPgogICAgICA8bGluZSB4MT0iMCIgeTE9IjEwIiB4Mj0iMzYiIHkyPSIxMCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNCIvPgogICAgICA8dGV4dCB4PSIxOCIgeT0iMjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiM4ODk2YWEiIG9wYWNpdHk9IjAuNiI+8J+TizwvdGV4dD4KICAgIDwvZz4KICA8L2c+CiAgPCEtLSBUZXh0IC0tPgogIDx0ZXh0IHg9IjMwMCIgeT0iMzcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNjIiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSI0IiBmaWxsPSIjZDRhMDMyIj5DQVJHTyBDTEFJTVM8L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI0MzgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI1OCIgZm9udC13ZWlnaHQ9IjgwMCIgbGV0dGVyLXNwYWNpbmc9IjMiIGZpbGw9IiNlOGVlZjEiPlBIIElJIMK3IFNPTFVUSU9OUzwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9IjUwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iNiIgZmlsbD0iIzg4OTZhYSI+Q09NSU5HIFNPT048L3RleHQ+Cjwvc3ZnPgo=" alt="Cargo Claims Phase II - Solutions" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Cargo Claims Ph II — Solutions <span class="arrow">→</span></div>
+                    <div class="card-desc">Phase II deep-dive into solution design and countermeasure refinement for cargo claims.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-upcoming">Upcoming</span>
+                        <span>Claims &amp; QA</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Cargo Claims Phase II — OTR / Dedicated -->
+            <a href="#" class="card card-upcoming" onclick="alert('Coming soon — this A3 is not yet published.'); return false;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxYTI3NDQiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiMxNjIxMzgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTQyODNhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNkNGEwMzIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZThiODRhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjQiIHN0ZERldmlhdGlvbj0iOCIgZmxvb2QtY29sb3I9IiMwMDAiIGZsb29kLW9wYWNpdHk9IjAuMyIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgcng9IjMyIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gR29sZCB0b3AgYmFyIC0tPgogIDxyZWN0IHg9IjMwIiB5PSIwIiB3aWR0aD0iNTQwIiBoZWlnaHQ9IjYiIHJ4PSIwIiBmaWxsPSJ1cmwoI2dvbGQpIi8+CiAgPCEtLSBSb2FkIC8gSGlnaHdheSBpY29uIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwMCwxOTUpIiBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8IS0tIFJvYWQgcGVyc3BlY3RpdmUgLS0+CiAgICA8cGF0aCBkPSJNLTgwLDYwIEwtMzAsLTYwIEwzMCwtNjAgTDgwLDYwIFoiIGZpbGw9IiMzYTQ1NTgiIHN0cm9rZT0iIzVhNjU3OCIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjciLz4KICAgIDwhLS0gUm9hZCBsaW5lcyAoZGFzaGVkIGNlbnRlcikgLS0+CiAgICA8bGluZSB4MT0iMCIgeTE9Ii01MCIgeDI9IjAiIHkyPSItMzAiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuNiIvPgogICAgPGxpbmUgeDE9IjAiIHkxPSItMTgiIHgyPSIwIiB5Mj0iMiIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjQuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjciLz4KICAgIDxsaW5lIHgxPSIwIiB5MT0iMTQiIHgyPSIwIiB5Mj0iMzgiIHN0cm9rZT0iI2Q0YTAzMiIgc3Ryb2tlLXdpZHRoPSI1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuOCIvPgogICAgPGxpbmUgeDE9IjAiIHkxPSI0NiIgeDI9IjAiIHkyPSI1OCIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjUuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjkiLz4KICAgIDwhLS0gVHJ1Y2sgc2lsaG91ZXR0ZSBvbiByb2FkIC0tPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCwgLTE1KSBzY2FsZSgwLjgpIj4KICAgICAgPCEtLSBUcmFpbGVyIC0tPgogICAgICA8cmVjdCB4PSItMTAiIHk9Ii0zNSIgd2lkdGg9IjU1IiBoZWlnaHQ9IjM1IiByeD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC42Ii8+CiAgICAgIDwhLS0gQ2FiIC0tPgogICAgICA8cGF0aCBkPSJNLTEwLC0zNSBMLTMwLC0zNSBMLTM1LC0xOCBMLTM1LC0yIEwtMTAsLTIgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC42Ii8+CiAgICAgIDwhLS0gV2hlZWxzIC0tPgogICAgICA8Y2lyY2xlIGN4PSItMjIiIGN5PSIyIiByPSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgICAgIDxjaXJjbGUgY3g9IjMwIiBjeT0iMiIgcj0iNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNSIvPgogICAgICA8IS0tIFdpbmRvdyAtLT4KICAgICAgPHJlY3QgeD0iLTI4IiB5PSItMzAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxMiIgcng9IjIiIGZpbGw9IiM0YTZhOGEiIG9wYWNpdHk9IjAuNCIvPgogICAgPC9nPgogIDwvZz4KICA8IS0tIFRleHQgLS0+CiAgPHRleHQgeD0iMzAwIiB5PSIzNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2MiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjQiIGZpbGw9IiNkNGEwMzIiPkNBUkdPIENMQUlNUzwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9IjQzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjUwIiBmb250LXdlaWdodD0iODAwIiBsZXR0ZXItc3BhY2luZz0iMiIgZmlsbD0iI2U4ZWVmMSI+T1RSIC8gREVESUNBVEVEPC90ZXh0PgogIDx0ZXh0IHg9IjMwMCIgeT0iNTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtd2VpZ2h0PSI0MDAiIGxldHRlci1zcGFjaW5nPSI2IiBmaWxsPSIjODg5NmFhIj5DT01JTkcgU09PTjwvdGV4dD4KPC9zdmc+Cg==" alt="Cargo Claims Phase II - OTR / Dedicated" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Cargo Claims Ph II — OTR / Dedicated <span class="arrow">→</span></div>
+                    <div class="card-desc">Segment-specific analysis and countermeasures for OTR and Dedicated cargo claims.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-upcoming">Upcoming</span>
+                        <span>OTR &amp; Dedicated Ops</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Expedited -->
+            <a href="#" class="card card-upcoming" onclick="alert('Coming soon — this A3 is not yet published.'); return false;">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMxYTI3NDQiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiMxNjIxMzgiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMTQyODNhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMCI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNkNGEwMzIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZThiODRhIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0ic2hhZG93IiB4PSItMTAlIiB5PSItMTAlIiB3aWR0aD0iMTIwJSIgaGVpZ2h0PSIxMjAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjQiIHN0ZERldmlhdGlvbj0iOCIgZmxvb2QtY29sb3I9IiMwMDAiIGZsb29kLW9wYWNpdHk9IjAuMyIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgcng9IjMyIiBmaWxsPSJ1cmwoI2JnKSIvPgogIDwhLS0gR29sZCB0b3AgYmFyIC0tPgogIDxyZWN0IHg9IjMwIiB5PSIwIiB3aWR0aD0iNTQwIiBoZWlnaHQ9IjYiIHJ4PSIwIiBmaWxsPSJ1cmwoI2dvbGQpIi8+CiAgPCEtLSBTcGVlZG9tZXRlciAvIENsb2NrIGljb24gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwLDIwMCkiIGZpbHRlcj0idXJsKCNzaGFkb3cpIj4KICAgIDwhLS0gT3V0ZXIgY2lyY2xlIC0tPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjcwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC41Ii8+CiAgICA8IS0tIElubmVyIGNpcmNsZSAtLT4KICAgIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNWE2NTc4IiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC40Ii8+CiAgICA8IS0tIFRpY2sgbWFya3MgLS0+CiAgICA8bGluZSB4MT0iMCIgeTE9Ii01NiIgeDI9IjAiIHkyPSItNDgiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC42Ii8+CiAgICA8bGluZSB4MT0iNDgiIHkxPSItMjgiIHgyPSI0MiIgeTI9Ii0yNCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjYiLz4KICAgIDxsaW5lIHgxPSI0OCIgeTE9IjI4IiB4Mj0iNDIiIHkyPSIyNCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjYiLz4KICAgIDxsaW5lIHgxPSIwIiB5MT0iNTYiIHgyPSIwIiB5Mj0iNDgiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC42Ii8+CiAgICA8bGluZSB4MT0iLTQ4IiB5MT0iMjgiIHgyPSItNDIiIHkyPSIyNCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjYiLz4KICAgIDxsaW5lIHgxPSItNDgiIHkxPSItMjgiIHgyPSItNDIiIHkyPSItMjQiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC42Ii8+CiAgICA8IS0tIE5lZWRsZSBwb2ludGluZyB0byBmYXN0L2hpZ2ggLS0+CiAgICA8bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIzNiIgeTI9Ii0zNiIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPCEtLSBDZW50ZXIgZG90IC0tPgogICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjYiIGZpbGw9IiNkNGEwMzIiIG9wYWNpdHk9IjAuOSIvPgogICAgPCEtLSBTcGVlZCBsaW5lcyAtLT4KICAgIDxsaW5lIHgxPSI4MCIgeTE9Ii0xMCIgeDI9IjEwNSIgeTI9Ii0xMCIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjQiLz4KICAgIDxsaW5lIHgxPSI4MiIgeTE9IjQiIHgyPSIxMDAiIHkyPSI0IiBzdHJva2U9IiNkNGEwMzIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjMiLz4KICAgIDxsaW5lIHgxPSI4NSIgeTE9IjE4IiB4Mj0iOTYiIHkyPSIxOCIgc3Ryb2tlPSIjZDRhMDMyIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjI1Ii8+CiAgICA8IS0tIExpZ2h0bmluZyBib2x0IGFjY2VudCAtLT4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC04NSwgLTIwKSBzY2FsZSgwLjcpIj4KICAgICAgPHBhdGggZD0iTTEwLC0zNSBMLTUsMCBMOCwwIEwtNSwzNSBMMTUsNSBMMiw1IFoiIGZpbGw9IiNkNGEwMzIiIG9wYWNpdHk9IjAuNSIvPgogICAgPC9nPgogIDwvZz4KICA8IS0tIFRleHQgLS0+CiAgPHRleHQgeD0iMzAwIiB5PSIzOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI3MiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjUiIGZpbGw9IiNkNGEwMzIiPkVYUEVESVRFRDwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9IjQ0OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjQyIiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iNiIgZmlsbD0iIzg4OTZhYSI+Q09NSU5HIFNPT048L3RleHQ+Cjwvc3ZnPgo=" alt="Expedited" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Expedited <span class="arrow">→</span></div>
+                    <div class="card-desc">A3 problem solving for the Expedited division — scope and team to be determined.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-upcoming">Upcoming</span>
+                        <span>Expedited Division</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ══════════ COMPLETED A3 PROJECTS ══════════ -->
+        <div class="section-divider">
+            <span class="label">Completed A3 Projects</span>
+            <span class="count">3</span>
+            <div class="line"></div>
+        </div>
+
+        <div class="card-grid">
+            <!-- Driver Retention -->
+            <a href="Driver_Retention_A3.html" class="card card-done">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwLjgiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFhMjc0NCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE2MjEzOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iIzE0MjgzYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTMwMzAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGQiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Q0YTAzMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlOGI4NGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNvcm5lciIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZDRhMDMyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0xMCUiIHk9Ii0xMCUiIHdpZHRoPSIxMjAlIiBoZWlnaHQ9IjEyMCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI2IiBmbG9vZC1jb2xvcj0iIzAwMCIgZmxvb2Qtb3BhY2l0eT0iMC4zNSIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMzIiIHk9IjAiIHdpZHRoPSI1MzYiIGhlaWdodD0iNiIgZmlsbD0idXJsKCNnb2xkKSIgcng9IjAiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjY29ybmVyKSIgcng9IjAiLz4KICA8IS0tIFRydWNrIGljb24gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwLDIwMCkiIGZpbHRlcj0idXJsKCNzaGFkb3cpIj4KICAgIDwhLS0gVHJhaWxlciBib2R5IC0tPgogICAgPHJlY3QgeD0iLTE1IiB5PSItNTUiIHdpZHRoPSI4MCIgaGVpZ2h0PSI1NSIgcng9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIwLjYiLz4KICAgIDwhLS0gVHJhaWxlciBsaW5lcyAtLT4KICAgIDxsaW5lIHgxPSI1IiB5MT0iLTU1IiB4Mj0iNSIgeTI9IjAiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuMyIvPgogICAgPGxpbmUgeDE9IjI1IiB5MT0iLTU1IiB4Mj0iMjUiIHkyPSIwIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjMiLz4KICAgIDxsaW5lIHgxPSI0NSIgeTE9Ii01NSIgeDI9IjQ1IiB5Mj0iMCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC4zIi8+CiAgICA8IS0tIEdyZWVuIHN0cmlwZSBvbiB0cmFpbGVyIC0tPgogICAgPGxpbmUgeDE9Ii0xNSIgeTE9Ii0zMCIgeDI9IjY1IiB5Mj0iLTMwIiBzdHJva2U9IiM0YTdjNDMiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjUiLz4KICAgIDwhLS0gQ2FiIC0tPgogICAgPHBhdGggZD0iTS0xNSwtNTUgTC00NSwtNTUgTC01NSwtMzAgTC01NSwwIEwtMTUsMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC42Ii8+CiAgICA8IS0tIFdpbmRvdyAtLT4KICAgIDxyZWN0IHg9Ii00OCIgeT0iLTQ4IiB3aWR0aD0iMjIiIGhlaWdodD0iMTYiIHJ4PSIzIiBmaWxsPSIjNGE2YThhIiBvcGFjaXR5PSIwLjM1Ii8+CiAgICA8IS0tIFdoZWVscyAtLT4KICAgIDxjaXJjbGUgY3g9Ii0zNSIgY3k9IjgiIHI9IjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIG9wYWNpdHk9IjAuNSIvPgogICAgPGNpcmNsZSBjeD0iLTM1IiBjeT0iOCIgcj0iMyIgZmlsbD0iIzg4OTZhYSIgb3BhY2l0eT0iMC4zIi8+CiAgICA8Y2lyY2xlIGN4PSIyMCIgY3k9IjgiIHI9IjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzg4OTZhYSIgc3Ryb2tlLXdpZHRoPSIyLjUiIG9wYWNpdHk9IjAuNSIvPgogICAgPGNpcmNsZSBjeD0iMjAiIGN5PSI4IiByPSIzIiBmaWxsPSIjODg5NmFhIiBvcGFjaXR5PSIwLjMiLz4KICAgIDxjaXJjbGUgY3g9IjQwIiBjeT0iOCIgcj0iOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC41Ii8+CiAgICA8Y2lyY2xlIGN4PSI0MCIgY3k9IjgiIHI9IjMiIGZpbGw9IiM4ODk2YWEiIG9wYWNpdHk9IjAuMyIvPgogICAgPCEtLSBDYWIgY29sb3IgYWNjZW50IC0tPgogICAgPHBhdGggZD0iTS0xNSwtNTUgTC00NSwtNTUgTC01NSwtMzAgTC01NSwwIEwtMTUsMCBaIiBmaWxsPSIjYzAzOTJiIiBvcGFjaXR5PSIwLjE1Ii8+CiAgPC9nPgogIDwhLS0gVGV4dCAtLT4KICA8dGV4dCB4PSIzMDAiIHk9IjM3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjY4IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iNCIgZmlsbD0iI2Q0YTAzMiI+RFJJVkVSPC90ZXh0PgogIDx0ZXh0IHg9IjMwMCIgeT0iNDQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNjgiIGZvbnQtd2VpZ2h0PSI4MDAiIGxldHRlci1zcGFjaW5nPSIzIiBmaWxsPSIjZThlZWYxIj5SRVRFTlRJT048L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI1MDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjYiIGZpbGw9IiM4ODk2YWEiPkhBWURFTiBTVE9DS0lORzwvdGV4dD4KPC9zdmc+Cg==" alt="Driver Retention" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Driver Retention <span class="arrow">→</span></div>
+                    <div class="card-desc">Reduced driver turnover through countermeasures in communication, leadership, and driver experience.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-completed">Completed</span>
+                        <span>Driver Experience &amp; Ops</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Cargo Claims Phase I -->
+            <a href="Cargo_Claims_A3.html" class="card card-done">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwLjgiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFhMjc0NCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE2MjEzOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iIzE0MjgzYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTMwMzAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGQiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Q0YTAzMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlOGI4NGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNvcm5lciIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZDRhMDMyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJveGZhY2UiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2M4OTY0YSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhNjc4MzAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0xMCUiIHk9Ii0xMCUiIHdpZHRoPSIxMjAlIiBoZWlnaHQ9IjEyMCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI2IiBmbG9vZC1jb2xvcj0iIzAwMCIgZmxvb2Qtb3BhY2l0eT0iMC4zNSIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMzIiIHk9IjAiIHdpZHRoPSI1MzYiIGhlaWdodD0iNiIgZmlsbD0idXJsKCNnb2xkKSIgcng9IjAiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjY29ybmVyKSIgcng9IjAiLz4KICA8IS0tIEJveCBpY29uIChpc29tZXRyaWMgc3R5bGUpIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwMCwxOTUpIiBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8IS0tIEJveCB0b3AgZmFjZSAtLT4KICAgIDxwYXRoIGQ9Ik0wLC02NSBMNTUsLTM1IEwwLC01IEwtNTUsLTM1IFoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M4OTY0YSIgc3Ryb2tlLXdpZHRoPSIyLjUiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTTAsLTY1IEw1NSwtMzUgTDAsLTUgTC01NSwtMzUgWiIgZmlsbD0iI2M4OTY0YSIgb3BhY2l0eT0iMC4xIi8+CiAgICA8IS0tIFRhcGUgb24gdG9wIC0tPgogICAgPHBhdGggZD0iTTAsLTY1IEwwLC01IiBzdHJva2U9IiNkYmI4NzAiIHN0cm9rZS13aWR0aD0iNiIgb3BhY2l0eT0iMC4yNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8IS0tIEJveCByaWdodCBmYWNlIC0tPgogICAgPHBhdGggZD0iTTU1LC0zNSBMNTUsMjUgTDAsNTUgTDAsLTUgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYTY3ODMwIiBzdHJva2Utd2lkdGg9IjIuNSIgb3BhY2l0eT0iMC40NSIvPgogICAgPHBhdGggZD0iTTU1LC0zNSBMNTUsMjUgTDAsNTUgTDAsLTUgWiIgZmlsbD0iI2E2NzgzMCIgb3BhY2l0eT0iMC4wOCIvPgogICAgPCEtLSBCb3ggbGVmdCBmYWNlIC0tPgogICAgPHBhdGggZD0iTS01NSwtMzUgTC01NSwyNSBMMCw1NSBMMCwtNSBaIiBmaWxsPSJub25lIiBzdHJva2U9IiNjODk2NGEiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjUiLz4KICAgIDxwYXRoIGQ9Ik0tNTUsLTM1IEwtNTUsMjUgTDAsNTUgTDAsLTUgWiIgZmlsbD0iI2M4OTY0YSIgb3BhY2l0eT0iMC4wNiIvPgogICAgPCEtLSBUYXBlIGhhbmdpbmcgb24gcmlnaHQgLS0+CiAgICA8cGF0aCBkPSJNNDIsLTI4IEw1NSwtMjAgTDU1LC0xMCBMNDgsLTE0IiBmaWxsPSIjZGJiODcwIiBvcGFjaXR5PSIwLjIiLz4KICAgIDwhLS0gRnJhZ2lsZSBzeW1ib2wgb24gbGVmdCBmYWNlIC0tPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTMwLCAxNSkiPgogICAgICA8IS0tIEdsYXNzIG91dGxpbmUgLS0+CiAgICAgIDxwYXRoIGQ9Ik0tOCwtMTIgTC00LC0xMiBMLTYsMCBMLTEwLDAgWiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC40Ii8+CiAgICAgIDxwYXRoIGQ9Ik0wLC0xMiBMOCwtMTIgTDEwLDAgTDYsMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMS41IiBvcGFjaXR5PSIwLjQiLz4KICAgICAgPCEtLSBDcmFjayAtLT4KICAgICAgPHBhdGggZD0iTS0yLC0xMCBMMSwtNCBMLTEsMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC40Ii8+CiAgICA8L2c+CiAgPC9nPgogIDwhLS0gVGV4dCAtLT4KICA8dGV4dCB4PSIzMDAiIHk9IjM3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjcyIiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iNSIgZmlsbD0iI2Q0YTAzMiI+Q0FSR088L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI0NTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI2OCIgZm9udC13ZWlnaHQ9IjgwMCIgbGV0dGVyLXNwYWNpbmc9IjMiIGZpbGw9IiNlOGVlZjEiPkNMQUlNUzwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9IjUwNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjI2IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iNiIgZmlsbD0iIzg4OTZhYSI+U0FSQUggSEFNTU9ORDwvdGV4dD4KPC9zdmc+Cg==" alt="Cargo Claims" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Cargo Claims — Phase I <span class="arrow">→</span></div>
+                    <div class="card-desc">Reduced preventable cargo claims per 1,000 orders through QA, OS&amp;D, and reefer management.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-completed">Completed</span>
+                        <span>Claims &amp; QA</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Pre-Trip Inspections -->
+            <a href="Pre-Trip_Inspection_A3.html" class="card card-done">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiB2aWV3Qm94PSIwIDAgNjAwIDYwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwLjgiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzFhMjc0NCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjQwJSIgc3RvcC1jb2xvcj0iIzE2MjEzOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjgwJSIgc3RvcC1jb2xvcj0iIzE0MjgzYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxYTMwMzAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdvbGQiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIwIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Q0YTAzMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlOGI4NGEiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNvcm5lciIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZDRhMDMyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8ZmlsdGVyIGlkPSJzaGFkb3ciIHg9Ii0xMCUiIHk9Ii0xMCUiIHdpZHRoPSIxMjAlIiBoZWlnaHQ9IjEyMCUiPgogICAgICA8ZmVEcm9wU2hhZG93IGR4PSIwIiBkeT0iNCIgc3RkRGV2aWF0aW9uPSI2IiBmbG9vZC1jb2xvcj0iIzAwMCIgZmxvb2Qtb3BhY2l0eT0iMC4zNSIvPgogICAgPC9maWx0ZXI+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iNjAwIiByeD0iMzYiIGZpbGw9InVybCgjYmcpIi8+CiAgPHJlY3QgeD0iMzIiIHk9IjAiIHdpZHRoPSI1MzYiIGhlaWdodD0iNiIgZmlsbD0idXJsKCNnb2xkKSIgcng9IjAiLz4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjY29ybmVyKSIgcng9IjAiLz4KICA8IS0tIENsaXBib2FyZCBpY29uIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMwMCwxOTApIiBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8IS0tIENsaXBib2FyZCBib2R5IC0tPgogICAgPHJlY3QgeD0iLTQ1IiB5PSItNjAiIHdpZHRoPSI5MCIgaGVpZ2h0PSIxMjAiIHJ4PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC41NSIvPgogICAgPCEtLSBDbGlwIGF0IHRvcCAtLT4KICAgIDxyZWN0IHg9Ii0xOCIgeT0iLTcwIiB3aWR0aD0iMzYiIGhlaWdodD0iMTYiIHJ4PSI0IiBmaWxsPSIjZDRhMDMyIiBvcGFjaXR5PSIwLjYiLz4KICAgIDwhLS0gQ2hlY2tsaXN0IGxpbmVzIC0tPgogICAgPCEtLSBSb3cgMSAtIGNoZWNrZWQgLS0+CiAgICA8cmVjdCB4PSItMzIiIHk9Ii0zOCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2NjOGEwIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNiIvPgogICAgPHBhdGggZD0iTS0yOSwtMzIgbDQsNCBsNywtOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2NjOGEwIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIwLjciLz4KICAgIDxsaW5lIHgxPSItMTAiIHkxPSItMzEiIHgyPSIzMiIgeTI9Ii0zMSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPCEtLSBSb3cgMiAtIGNoZWNrZWQgLS0+CiAgICA8cmVjdCB4PSItMzIiIHk9Ii0xNCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2NjOGEwIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNiIvPgogICAgPHBhdGggZD0iTS0yOSwtOCBsNCw0IGw3LC04IiBmaWxsPSJub25lIiBzdHJva2U9IiMzY2M4YTAiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIG9wYWNpdHk9IjAuNyIvPgogICAgPGxpbmUgeDE9Ii0xMCIgeTE9Ii03IiB4Mj0iMzIiIHkyPSItNyIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMzUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPCEtLSBSb3cgMyAtIGNoZWNrZWQgLS0+CiAgICA8cmVjdCB4PSItMzIiIHk9IjEwIiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHJ4PSIzIiBmaWxsPSJub25lIiBzdHJva2U9IiMzY2M4YTAiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNLTI5LDE2IGw0LDQgbDcsLTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNjYzhhMCIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgb3BhY2l0eT0iMC43Ii8+CiAgICA8bGluZSB4MT0iLTEwIiB5MT0iMTciIHgyPSIzMiIgeTI9IjE3IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC4zNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8IS0tIFJvdyA0IC0gdW5jaGVja2VkIC0tPgogICAgPHJlY3QgeD0iLTMyIiB5PSIzNCIgd2lkdGg9IjE0IiBoZWlnaHQ9IjE0IiByeD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuNCIvPgogICAgPGxpbmUgeDE9Ii0xMCIgeTE9IjQxIiB4Mj0iMzIiIHkyPSI0MSIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjIiIG9wYWNpdHk9IjAuMjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPCEtLSBXcmVuY2ggYWNjZW50IC0tPgogICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNTIsLTE1KSByb3RhdGUoMzApIj4KICAgICAgPHJlY3QgeD0iLTQiIHk9Ii0zMCIgd2lkdGg9IjgiIGhlaWdodD0iMzUiIHJ4PSIyIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjQ1Ii8+CiAgICAgIDxjaXJjbGUgY3g9IjAiIGN5PSItMzQiIHI9IjEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMi41IiBvcGFjaXR5PSIwLjQ1Ii8+CiAgICAgIDxyZWN0IHg9Ii0zIiB5PSItMjgiIHdpZHRoPSI2IiBoZWlnaHQ9IjgiIGZpbGw9IiMxNjIxMzgiIG9wYWNpdHk9IjAuOCIvPgogICAgPC9nPgogICAgPCEtLSBHZWFyIGFjY2VudCAtLT4KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKC01NSwgMzUpIj4KICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjAiIHI9IjE0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40Ii8+CiAgICAgIDxjaXJjbGUgY3g9IjAiIGN5PSIwIiByPSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC40Ii8+CiAgICAgIDxsaW5lIHgxPSIwIiB5MT0iLTE2IiB4Mj0iMCIgeTI9Ii0xMiIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9IjAuNCIvPgogICAgICA8bGluZSB4MT0iMCIgeTE9IjEyIiB4Mj0iMCIgeTI9IjE2IiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC40Ii8+CiAgICAgIDxsaW5lIHgxPSItMTYiIHkxPSIwIiB4Mj0iLTEyIiB5Mj0iMCIgc3Ryb2tlPSIjODg5NmFhIiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9IjAuNCIvPgogICAgICA8bGluZSB4MT0iMTIiIHkxPSIwIiB4Mj0iMTYiIHkyPSIwIiBzdHJva2U9IiM4ODk2YWEiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC40Ii8+CiAgICA8L2c+CiAgPC9nPgogIDwhLS0gVGV4dCAtLT4KICA8dGV4dCB4PSIzMDAiIHk9IjM3NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjYyIiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iMyIgZmlsbD0iI2Q0YTAzMiI+UFJFLVRSSVA8L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI0NDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZiIgZm9udC1zaXplPSI1OCIgZm9udC13ZWlnaHQ9IjgwMCIgbGV0dGVyLXNwYWNpbmc9IjIiIGZpbGw9IiNlOGVlZjEiPklOU1BFQ1RJT05TPC90ZXh0PgogIDx0ZXh0IHg9IjMwMCIgeT0iNTA1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI0MDAiIGxldHRlci1zcGFjaW5nPSI2IiBmaWxsPSIjODg5NmFhIj5BTkRZIFBFVEVSUzwvdGV4dD4KPC9zdmc+Cg==" alt="Pre-Trip Inspections" class="card-img">
+                <div class="card-body">
+                    <div class="card-title">Pre-Trip Inspections <span class="arrow">→</span></div>
+                    <div class="card-desc">Drove DVIR completion to 100% and reduced CSA Maintenance scores through accountability programs.</div>
+                    <div class="card-meta">
+                        <span class="card-tag tag-completed">Completed</span>
+                        <span>Safety &amp; Compliance</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ══════════ Footer ══════════ -->
+        <div class="footer">
+            <div><strong>Hirschbach Process Improvement</strong> &nbsp;·&nbsp; A3 &amp; PDCA Problem Solving</div>
+            <div class="footer-motto">"Every Process. Every Person. Every Day."</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
