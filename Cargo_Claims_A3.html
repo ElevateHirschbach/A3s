@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A3 - Cargo Claims</title>
+    <style>
+        @font-face {
+            font-family: 'Gilroy';
+            font-weight: 400;
+            font-style: normal;
+            src: local('Gilroy Regular'), local('Gilroy-Regular');
+        }
+        @font-face {
+            font-family: 'Gilroy';
+            font-weight: 700;
+            font-style: normal;
+            src: local('Gilroy Bold'), local('Gilroy-Bold');
+        }
+        @font-face {
+            font-family: 'Gilroy';
+            font-weight: 800;
+            font-style: normal;
+            src: local('Gilroy ExtraBold'), local('Gilroy-ExtraBold');
+        }
+    </style>
+    <style>
+        :root {
+            --green-bg: #2d5a27;
+            --green-current: #4a7c43;
+            --red-problem: #a62c21;
+            --red-root: #8b2920;
+            --blue-goals: #1a4a4a;
+            --blue-counter: #1e3a5f;
+            --blue-implement: #234b73;
+            --slate-validate: #4a6670;
+            --section-bg-left: #d4dfe4;
+            --section-bg-right: #e8eef1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #374151;
+            --text-light: #ffffff;
+        }
+
+        @page {
+            size: A3 landscape;
+            margin: 6mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Gilroy', 'Inter', -apple-system, sans-serif;
+            background: #f5f5f5;
+            color: var(--text-primary);
+            font-size: 12pt;
+            line-height: 1.45;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .a3-container {
+            width: 420mm;
+            height: 297mm;
+            padding: 5mm;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 3mm;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 3mm;
+            border-bottom: 2px solid #333;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 4mm;
+        }
+
+        .logo-placeholder {
+            width: 18mm;
+            height: 18mm;
+            background: linear-gradient(135deg, #1e3a5f, #2d5a27);
+            border-radius: 2mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8pt;
+            color: white;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .title-area h1 {
+            font-size: 26pt;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .title-area .subtitle {
+            font-size: 11pt;
+            color: var(--text-secondary);
+            margin-top: 1mm;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 10pt;
+            color: var(--text-secondary);
+        }
+
+        .header-right .date {
+            font-weight: 600;
+            font-size: 11pt;
+            color: var(--text-primary);
+        }
+
+        .team-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2mm;
+            padding: 2mm 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 10pt;
+        }
+
+        .team-item label {
+            font-size: 8pt;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: block;
+        }
+
+        .team-item span {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3mm;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 2mm;
+        }
+
+        .column-left {
+            background: var(--section-bg-left);
+            border-radius: 2mm;
+            padding: 2mm;
+        }
+
+        .column-right {
+            background: var(--section-bg-right);
+            border-radius: 2mm;
+            padding: 2mm;
+        }
+
+        .section {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .section-header {
+            padding: 3mm 4mm;
+            border-radius: 1.5mm 1.5mm 0 0;
+            color: white;
+            font-weight: 700;
+            font-size: 12pt;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+
+        .section-header .letter {
+            font-weight: 800;
+        }
+
+        .bg-green { background: var(--green-bg); }
+        .bg-green-current { background: var(--green-current); }
+        .bg-red { background: var(--red-problem); }
+        .bg-red-dark { background: var(--red-root); }
+        .bg-teal { background: var(--blue-goals); }
+        .bg-blue { background: var(--blue-counter); }
+        .bg-blue-light { background: var(--blue-implement); }
+        .bg-slate { background: var(--slate-validate); }
+
+        .section-content {
+            flex: 1;
+            background: white;
+            padding: 3mm;
+            border-radius: 0 0 1.5mm 1.5mm;
+            font-size: 10pt;
+            color: var(--text-secondary);
+        }
+
+        .impact-callout {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 3px solid #d97706;
+            border-radius: 1.5mm;
+            padding: 2mm;
+            margin-top: 2mm;
+        }
+
+        .impact-callout .big-number {
+            font-family: 'Gilroy', sans-serif;
+            font-weight: 700;
+            font-size: 18pt;
+            color: #92400e;
+        }
+
+        .impact-callout .label {
+            font-size: 8pt;
+            color: #92400e;
+        }
+
+        .goal-metric {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 2mm;
+            padding: 3mm;
+            text-align: center;
+        }
+
+        .goal-metric .number {
+            font-family: 'Gilroy', sans-serif;
+            font-weight: 700;
+            font-size: 24pt;
+            color: #065f46;
+        }
+
+        .goal-metric .label {
+            font-size: 9pt;
+            color: #047857;
+            margin-top: 1mm;
+        }
+
+        .goal-metric .deadline {
+            font-size: 9pt;
+            color: #059669;
+            margin-top: 2mm;
+            padding-top: 2mm;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .rc-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5mm;
+            margin-top: 1.5mm;
+        }
+
+        .rc-cat {
+            padding: 1.5mm;
+            border-radius: 1.5mm;
+            font-size: 8pt;
+        }
+
+        .rc-cat-temp { background: #fee2e2; border-left: 2px solid #dc2626; }
+        .rc-cat-process { background: #dbeafe; border-left: 2px solid #2563eb; }
+        .rc-cat-system { background: #fef3c7; border-left: 2px solid #d97706; }
+        .rc-cat-driver { background: #f3e8ff; border-left: 2px solid #7c3aed; }
+        .rc-cat-reporting { background: #e0e7ff; border-left: 2px solid #4338ca; }
+        .rc-cat-maintenance { background: #ecfdf5; border-left: 2px solid #059669; }
+
+        .rc-cat-title {
+            font-weight: 700;
+            margin-bottom: 0.5mm;
+            font-size: 8pt;
+        }
+
+        .rc-cat-items {
+            font-size: 8pt;
+            line-height: 1.35;
+        }
+
+        .impl-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+        }
+
+        .impl-table th {
+            background: #e2e8f0;
+            padding: 1.5mm 2mm;
+            text-align: left;
+            font-weight: 600;
+            font-size: 8pt;
+        }
+
+        .impl-table td {
+            padding: 1.5mm 2mm;
+            border-bottom: 0.5px solid #e2e8f0;
+        }
+
+        .monday-callout {
+            display: inline-flex;
+            align-items: center;
+            gap: 1.5mm;
+            background: #6161ff;
+            color: white;
+            border-radius: 1.5mm;
+            padding: 1.5mm 3mm;
+            font-size: 9pt;
+            margin-top: 2mm;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8pt;
+            color: #666;
+            padding-top: 2mm;
+            border-top: 1px solid #ddd;
+        }
+
+        /* Claim bar chart */
+        .claim-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 22mm;
+            padding: 1mm 0;
+        }
+
+        .claim-bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5mm;
+        }
+
+        .claim-bar {
+            width: 9mm;
+            border-radius: 1mm 1mm 0 0;
+        }
+
+        .claim-bar-label {
+            font-size: 6pt;
+            color: #666;
+            text-align: center;
+            max-width: 12mm;
+        }
+
+        .claim-bar-value {
+            font-size: 7pt;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .status-complete { color: #059669; }
+        .status-progress { color: #d97706; }
+        .status-planned { color: #6366f1; }
+        .status-bench { color: #6b7280; }
+    </style>
+</head>
+<body>
+    <div class="a3-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <img src="data:image/png;base64,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yZIl5eXlL7744vr16x977LHBgwcPGTKkb9++lNIXX3yxpaWltrb2/vvvHzx48MiRI7Ozs3Nzc6dPn96zZ8+pU6cuWbKEqRBK6eeff96jRw+HwxESEjJ79uzFixd/+OGH7e3tTzzxhMFgkCSpvb39H//4R3Fx8ZNPPnnixIn58+evXLny3nvvHThw4KZNm3Jzc//xj38cOnRowYIF+/bte/bZZ5OTk1lRpy+++KK2tnbWrFk2m23SpEkTJ07s16/fwIEDAWDBggUtLS3PP//8xx9/vH79htraWkVRnnrqqSVLlrCUSY7jCCHXXnvt+PHj2R67c1I4mf+tUcVWuxBAjiOE5KZiYq9FWjOfPJxoQwD8BzYtZV9huycyMzOffvrp7du3R0ZGUkotFkt+fv7cuXMnTpx422231dfXp6WlAcBTTz0VFRUlSdKRI0fy8vL69ev3yiuvsMPb2tpeeeWVvn37GgyGlJSUuXPnZmRkTJs2bfTo0bt27XrppZeuuuoqs9ncv3//mTNn9uzZMzo6esiQIX//+9/ffPNNnudfffXVadOmIYSSk5Pnz5//5JNPlpeXjxo1SmVljUajyWS6+eabW1paRo4c6ff7o6OjBUEoKyuTJOnuu+8GgMmTJ5eUlLz55puTJ09uaWmpqqoaP3788OHD77nnHgDIy8srKCj461//etVVV8XExPA8f//999tstj59+jgcjoULF+bk5BiNxhEjRsydO9dqtcbHx99xxx3vvffel19+OWHChPDw8JiYGJbJznaTqymTADBgwAA4p/I76EkU+IoternIDCHzcr7HSKQLwbLL/ferD27ZAYBZ8Wie55OTk+fNmzdnzhxJkpxO55gxY1pbW5uamnJzc999993p06dHRkYmJCTMnj170KBB69evP3LkyJw5c1paWnbs2AEA6enpHMcNHz68d+/eFRUVGRkZM2fOfOyxx1auXNmrV6+ioiKdTsc2+Gs0GpvNtmvXruXLl/fu3fuGG2547bXXDAZDQ0PDsmXLJk2atH379ra2tr///e933333mjVrTlV/iI/v0aPHokWLrr32Wrfb7fF4Jk+evHfvXp1Ol5+f/9VXX/Xv3z82NjYtLW3evHmCIOzbt6+ysvK1115bs2YNy/TPyspCCE2aNMlisXR0dPTq1eujjz664ooroqOjk5KSHn300YyMjE2bNtnt9s8///y6667bt29fZmZmQUHB4MGDGxsbo6KimAm+5JJLWC4ugxRrd83KN/yalo4XLrACQ9Bq6pOAEAKieLa+4P5rz8olO6pcgrqqSktLc7vdzz777DfffEMpdbvdV1999erVqzMzM0tLSxcsWPDdd98NGjRo165daWlpe/fubWxsbGhoCA0N/fvf/84ukJGRgTG+9tpr586d63a7vV6v1WoVBGHNmjV9+/bdu3dvdnZ2S0tLaGio0+n0eDyRkZFGozE8PPyll15avHixy+WaPn36fffd99BDDw0cOPCmm26aMWPGzJkzJ06cyGwNAOTn5x85cuT555/ftWsXAAiCMGbMmCVLlgwbNmzNmjWvvPJKcXHxgAEDNmzYMHTo0M8++wwAWLmbTz/9lPk9qampJpNp3Lhxd999d0JCQmFh4QsvvLBjx47Bgwdv27YtLy9v06ZN9fX1d91112233fbHP/5x0qRJhJCjR4/27dv3+PHjWVlZP/zwg9/vnzhxYkFBQWBCRFJSEtPo58rB+r2BFVCcHUnV2+0fjXWufQLXWcsbzS6QUFcme15eXnNz8+7du48fPy6KYlxcXJ8+fVauXDl69OiioqKCggKr1Tp48OA1a9Z8/vnnycnJABAaGrp3796qqiq2F6V///5vvvnmn/70p7Vr1w4ZMqSiouKtt94CgLi4uMjIyMrKyjFjxjBN1tTUhDFes2YNe8TXrVtXVFR03333zZ8//8CBA7W1tcOGDXvrrbeKi4vtdrvD4cjLy2N5Pv369SssLCwqKmpqanK73QMGDNBqteXl5cOHD9+yZUtRUZEoir169frwww83b97MqnSEhYV9++23akG5jIyM+fPnP/zww4cOHRo+fPi+ffsKCwtdLtfAgQOXLl26bNmykJCQyZMnv/DCC0VFRe3t7YIg6PV6Qghr69qrV6+DBw+ePHkyLi6uqalp0KBB6plzc3P1ev0vVsi9iDQWJQgh6m51Lbul49Ux/sM7QQu0Sne4QQ68FaPRmJqaunHjxuuvv97n8/E8v2/fPgAwmUyXXHLJhg0b8vPzPR5PeXl5TU1NTEwMxjgyMrKoqAjU3S+iqO6xjoyMLCwsZBkveXl5GzduXLly5dSpUz/66KPCwsL09PRt27atWLHC4XCwiX/44YcLCgomTpz4/fffb968efPmzUOHDt22bdt3331nsVgef/xxdgmO48aNG7d+/fo+ffo0NDRotdr169ezK95///1Lly5NT09vbGysr68vLS3t06cPQ/+BAwdYoDo0NLSlpaWmpkZtLD158uR169ZlZ2fb7faqqqqKioqsrCyPxzNo0KCtW7fu2rVrw4YNbW1tGzZsCA0NXb58eWhoaElJyaFDh5YvX56enj537lxVRbFNz2cG9S8SgvRngIUVW63/0FdKayn1OSR3i6GI3LL66LJGh1pAmxE2Wq3W6/WykiFqoy+NRsPzvNfrVfMaeJ5nXkVggZ7A3rjq4WwKFUUxmUx+v59tudZoNIIgsNJZ7KKSJPn9fvV9dgmdTudyuQLraas34/F4mKpQr6LVahFCLB9QvUlZltl6TeWNWY9g9WxarZbjOJbvFXiUIAharZY108MYG41Gj8fDaE/2GwNPxe5w+fLlU6dOZVc8Vz7WOWt50pkRRQB5Pf1HDy88eFij0QTWCWbddQMjXCrdpz7lXfknGIAAJQgQIEyBAiGMaurW+oTVx5JlWa2JreavBqbTBOa1qnkp6nfUm1HtezdYB5p+9ZuBoDyN7+nk6hFrocLqbyGEABAbAUIURSFq8wFZlnmeVxtXBwY52CU4jjty5EhmZmZgEdeLXmN1ZWXRzpJ9mOPr6+szMzPZk/pfLz//k9/yiyVfz0TST35ffQZ+EmG/wzizq6SlpR07dkyj0ZzD1l/wO6cmsx0EiCmVLvbUYjE/8cQT3frM/JsJFJg46vxHvkEarSZrPHG3Kc5mrdh25GjlyuOnwS09PT06Oprn+Y6OjtbWVrPZXFFRwXFcTk5OZWVlYmJiVFQUz/Otra2lpaW9e/cOCQmhlBYWFvp8vtzc3NLSUlEUo6KiIiIiWKJiTExMWlqaRqNpbW1Va15mZ2fzPF9cXJyUlMTzfHV1NaW0V69ejY2NHR0dp2lQBHcMgHAt4OxJiMhi6QZNzuU4PJV6rDg0GWkM1OcgrmZsjkMaI1Dl7O0Hmf3t378/0/3nEFW/bazwdxIWCxOt9ORG0n6QKh1kyyP+BXr6tvG1iSwMd8rAlZeXl5aWHj58+Jlnnpk/f/7OnTsBYMyYMTU1NQkJCfX19YcPHy4uLn7iiSd69uwpSdLq1auPHj26devWiIiI1tbWIUOGAMDGjRuffbYzPf/TTz/t6OhgwZY777wTAHr06GG321nl+nnz5rFlR79+/Wpra2NjY1X9x+Y8zgy2JxB9CpTCd2ntBuUlM1kxjXrqCaWUKP9hcLard9y5ihL+5rHCX20Z6Vla6Pwyua+Icn0BcTYhXise/Fyq2ipVHVYohNlgZ00na8aukpSUFBER0bdv39raWgBQq5PNnDlz/fr1bDE/cuRIh8MBALfeemttbe3VV189bNiwDRs2uFyupqamuLi4Xr16paenX3PNNezYgQMHzp8/f9GiRevWrRs5cuRHH300c+bM4uJi5r8XFBQwkn3evHmLFy9uamoK8LiBUsiO4jCH6r2EWzobhyUrrU5NpCdEG0s7d0srnb+Rwq+38mwVcs77m55LYKl5QsJ/lOHfiUuMcGgiNUcBkQV9iByTCSME6mxEvPb40pcArOoO4F69etnt9traWja7rPArAFx22WVTp04dNGhQY2Ojw+HQaDSiKPbr148RFn379m1ubvb7/SdOnMjIyJg6deqiRYuYR2g0GqOjoxnNkZKS8s033wDAlClTPvzww4ceeshsNjPTOWHChOzsbKbP1LUq01i9wxSdD1x+hInEh+HQu79FgpGTPUhjUveedCYT/5t27RzbwQuxi313XGKOC09V3xTSLmGrodq6hpq25wCA0M5MlfT09JSUlN27d3u93ksvvVQURUZsKopy8ODBa6+9Njs7e+/evU1NTVOmTElJSenTp89LL700bdo0VtJzz549s2fPPnLkyDvvvMOQygJHR48e1Wg0sbGxu3fvHjp0qKIoK1aseOqppwwGw4kTJ+x2+wcffPD666/b7fZAEoTpk8GTbhCGhevtbrDXUI8VhyTxMXmUks5dh+cDQP4fAisw7/nUO5QQ4LDUemjFi16Pm/VaZh8OHTp0xYoVzzzzTEhICFN4fr//xhtvZMTm8OHDP/74Y7WrYE5OzuLFi8PCwux2+xtvvAEA+/fvX7BgwaxZsxjLJYpiXl6ezWZzOBx9+vThOK6kpOT9999HCF1zzTUmk0mv1wOAw+GIiopatGhRoLpicEcA/aY+BvkDLIQixat0VHOhyWpk4hw2oP9/D6xTGbenMvQoxaAQEKIONfPAYkRd7cGysrL++te/HjlyRKvVAoDb7Y6Ojo6JiZk9ezYAJCcnv/LKK4cOHQKA6OjoyMjI999/PyYmZty4cYzBIoTU19evXbtWJTD79u3LVoL5+flNTU0ajWbs2LFFRUUTJkxACLHKn7Isf/3116zfp+pKMgcrKcoQW/4hZKQiXRhwWj6m12kEwYWMKjjnbeV+E7wBBYDCsvpAdsdkMiUnJ/fq1euuu+4aM2YMANhstpEjR7pcrgMHDiQlJcXExAwcOPCBBx7Iy8tLT0+nlDY1NTU1NUVFRY0ePRoAhgwZ0tjYKIqiWimud+/eFovl0ksvffTRRzdt2jRt2jS32z19+vQ77rhDkiSdTsc0H4sQ79ixY9KkSZ0kLds7nxwZPmCKog1jd0nVrqrn2u8OAuunheN5WZaLDxcFxssMBsOqVasSExOnTZvGNtlVVFR8++237733HgvsrFixIjc395prrklOTvb5fB9//LGiKM3NzUuXLo2OjgaA1tbWTz/9lJ2NGbVdu3a1tLTMmjWroKDg0UcfjYyMfPHFF9lFv/76a6vVijFeu3btnj17OI6rqqqq6mq6xGx3frgLMAGMgCoIYYQ51a+6GB5velE8H6d8F0IwxtXV1bm5uX6//1RjutP3TLO2lIxFZBpI/VQNvamxRbXFIZyeiBLoM6lqTD0bS91kycGBL9h3JEla9rcF1949X1Yoy16/OPB0UfhYPw+soqIiViH351JHTq3OKO32HTXq95Pf+bkTqrhUv6C+c+YLFkLO/8N1AIARRYAuMlRdhMBiKsFgMAwbNsxsNp/b1JGfu0O/35+Wlpaa0uNC5hP+n5nCC4EkORWo/p13Jwc11n87bWra03m9bsL4In5+Lk6NdUH8qIvVCAZNYVB+S30cHIKgBIEVlCCwghIEVlCCEgRWUILACkoQWEEJShBYQQkCKyhBYAUlKEFgBSUIrKAEgRWUoASBFZQgsIISBFZQghIEVlCCwApKEFhBCUoQWEEJAisoQWAFJShBYAUlCKygBIEVlKAEgRWU807+D4nq/mQpRTi5AAAAAElFTkSuQmCC" alt="Elevate Logo" style="width: 18mm; height: 18mm; object-fit: contain; border-radius: 2mm;">
+                <div class="title-area">
+                    <h1>CARGO CLAIMS</h1>
+                    <div class="subtitle">Reducing OTR Cargo Claims — Protecting product, customers, and profitability across the cold chain</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="date">Last Updated: 11/04/2025</div>
+                <div>Version: 1.0</div>
+            </div>
+        </header>
+
+        <!-- Team Bar -->
+        <div class="team-bar">
+            <div class="team-item">
+                <label>Executive Sponsor</label>
+                <span>Fred Staugh</span>
+            </div>
+            <div class="team-item">
+                <label>Project Leader</label>
+                <span><s style="color:#888;">Kristi Noland (10/30/2025)</s><br>Sarah Hammond</span>
+            </div>
+            <div class="team-item">
+                <label>Data Analyst</label>
+                <span>Carter Stocking</span>
+            </div>
+            <div class="team-item">
+                <label>PI Facilitator</label>
+                <span>Kristi Noland</span>
+            </div>
+            <div class="team-item">
+                <label>Kickoff Date</label>
+                <span>01/20/2025</span>
+            </div>
+            <div class="team-item">
+                <label>Target Date</label>
+                <span>03/31/2026</span>
+            </div>
+        </div>
+
+        <!-- Main Two-Column Grid -->
+        <div class="main-grid">
+            <!-- LEFT COLUMN: Problem Analysis -->
+            <div class="column column-left">
+
+                <!-- (A) Background -->
+                <div class="section" style="flex: 0.4;">
+                    <div class="section-header bg-green">
+                        <span class="letter">(A)</span> Background
+                    </div>
+                    <div class="section-content">
+                        Before the VP of Process Improvement role was established, Hirschbach had begun work on improving Cold Chain Compliance. Leadership then redirected the new VP's first major initiative to focus on reducing cargo claims. In 2024, Hirschbach recorded <strong>467 cargo claims</strong> totaling <strong>$5.4M</strong>, with <strong>$3.2M (59%)</strong> identified as preventable. <em>Note: The A3 for this initiative was presented to the ELC on 2/20/2025.</em>
+                    </div>
+                </div>
+
+                <!-- (B) Current State -->
+                <div class="section" style="flex: 2.8;">
+                    <div class="section-header bg-green-current">
+                        <span class="letter">(B)</span> Current State
+                    </div>
+                    <div class="section-content" style="font-size: 8pt; padding: 2.5mm;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2mm;">
+                            <!-- LEFT SUB-COLUMN -->
+                            <div>
+                                <div style="font-weight: 700; font-size: 9pt; color: #dc2626; margin-bottom: 1mm;">📊 Claim Breakdown — $5.4M Total (467 claims)</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • <strong>Temperature Abuse:</strong> $1.7M (32%) — 150 claims<br>
+                                    &nbsp;&nbsp;– $926K Solutions · $644K OTR · $171K Local · $9K DED<br>
+                                    &nbsp;&nbsp;– $1M from Walmart, Tyson, & Kroger alone<br>
+                                    • <strong>Crashes:</strong> $1.2M (23%) — 22 claims<br>
+                                    • <strong>Mechanical Failures:</strong> $741K (14%) — 11 claims<br>
+                                    • <strong>Damage/Theft/Shift/Seals:</strong> $713K (13%) — 98 claims<br>
+                                    &nbsp;&nbsp;– 18 broken seal events = $251K in losses<br>
+                                    &nbsp;&nbsp;– Seal guard 55% fail rate at East Dubuque<br>
+                                    • <strong>Trailer Fires:</strong> $470K (9%) — 10 events<br>
+                                    &nbsp;&nbsp;– 12 fires linked to low tire pressure<br>
+                                    • <strong>OS&D / Late Loads:</strong> $413K (8%) — 25 claims
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">🌡️ Temperature Management Crisis</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • <strong>75%</strong> of reefer loads run in manual override<br>
+                                    • 54 preset variations — too many to select accurately<br>
+                                    • Only <strong>17%</strong> of EDI orders contain usable temp setpoints<br>
+                                    • AS400→Mastermind blank temp = converted to 0°F (false data)<br>
+                                    • Customers often don't tender temp, mode, commodity, or value of freight
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">📋 QA Process Gaps</div>
+                                <div style="margin-left: 2mm;">
+                                    • QA manually reviews every image for every load<br>
+                                    • Hours of delay between L-Call and QA review<br>
+                                    • No exception-based reporting; works from spreadsheets<br>
+                                    • Reefer alarms, fuel issues, wrong settings go undetected
+                                </div>
+                            </div>
+
+                            <!-- RIGHT SUB-COLUMN -->
+                            <div>
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">⚠️ Operational Process Gaps</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • No standard SOP for loaded call, empty call, or T-call<br>
+                                    • "Us vs. them" mentality between Dubuque & Sapulpa<br>
+                                    • Eliminated JCT processes were sometimes better<br>
+                                    • Manual empty call process causes significant delays
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">👥 Roles & Responsibilities Confusion</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • QA owns all temp issues; OS&D handles rejected freight<br>
+                                    • CSRs, DLs overlook tasks — assume QA will catch it later<br>
+                                    • No OS&D support for Solutions business segment<br>
+                                    • QA sends emails when phone calls are needed
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">🚛 Driver & Training Issues</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • Incorrect reefer settings by drivers<br>
+                                    • Delayed loaded or empty calls<br>
+                                    • Inaccurate photos during loaded call<br>
+                                    • Confusion on continuous vs. start-stop settings
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">🔧 Maintenance & Reporting</div>
+                                <div style="margin-left: 2mm; margin-bottom: 2mm;">
+                                    • 17% of reefer services overdue<br>
+                                    • Road service only responds to "act now" / shutdown alerts<br>
+                                    • Too many false alarm codes undermine urgency<br>
+                                    • Telematics not integrated into AS400
+                                </div>
+
+                                <div style="font-weight: 700; font-size: 8pt; margin-bottom: 1mm;">📍 Geo Fence & EDI</div>
+                                <div style="margin-left: 2mm;">
+                                    • Duplicate geofence locations → inaccurate reporting<br>
+                                    • Only 50 of EDI customers onboarded; top 5 not yet included<br>
+                                    • Cannot automate arrival/departure without clean geo data
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- (C) Problem Statement -->
+                <div class="section" style="flex: 0.4;">
+                    <div class="section-header bg-red">
+                        <span class="letter">(C)</span> Problem Statement
+                    </div>
+                    <div class="section-content">
+                        Hirschbach's cargo claims rate is <strong>1.44 per 1,000 orders</strong> (preventable: 0.61), driven by temperature abuse, unclear ownership, manual processes, and fragmented systems. <strong>$3.2M in preventable losses</strong> annually erodes margins, damages customer relationships, and exposes the company to escalating risk.
+                    </div>
+                </div>
+
+                <!-- (D) Root Cause Analysis -->
+                <div class="section" style="flex: 1.2;">
+                    <div class="section-header bg-red-dark">
+                        <span class="letter">(D)</span> Root Cause Analysis
+                    </div>
+                    <div class="section-content" style="padding: 2mm;">
+                        <div class="rc-categories">
+                            <div class="rc-cat rc-cat-temp">
+                                <div class="rc-cat-title">🌡️ Temperature Management</div>
+                                <div class="rc-cat-items">
+                                    • Confusion around "correct" temp source<br>
+                                    • BOL is source of truth — but often missing/unreadable<br>
+                                    • EDI platform captures only 17% of temps<br>
+                                    • Continuous vs. start-stop confusion<br>
+                                    • 54 presets overwhelm drivers → 75% override
+                                </div>
+                            </div>
+                            <div class="rc-cat rc-cat-process">
+                                <div class="rc-cat-title">📋 Process & Ownership</div>
+                                <div class="rc-cat-items">
+                                    • Undefined SOPs for loaded/empty/T-calls<br>
+                                    • Unclear who enters temps in AS400<br>
+                                    • OS&D issues communicated via text — invisible<br>
+                                    • Manual empty call creates delays and gaps<br>
+                                    • No defined escalation process
+                                </div>
+                            </div>
+                            <div class="rc-cat rc-cat-system">
+                                <div class="rc-cat-title">💻 Systems & Reporting</div>
+                                <div class="rc-cat-items">
+                                    • No exception-based reporting or dashboard<br>
+                                    • AS400 blank → Mastermind converts to 0°F<br>
+                                    • Telematics not integrated with dispatch<br>
+                                    • Geofence tables have duplicate locations<br>
+                                    • Heavy manual/admin tasks for QA<br>
+                                    • No stop gap at empty call to ensure freight is not left in trailer
+                                </div>
+                            </div>
+                            <div class="rc-cat rc-cat-driver">
+                                <div class="rc-cat-title">🎓 Driver Training</div>
+                                <div class="rc-cat-items">
+                                    • Incorrect reefer settings by drivers<br>
+                                    • Delayed loaded or empty calls<br>
+                                    • Inaccurate photos submitted during loaded call<br>
+                                    • Continuous vs. start-stop temperature settings<br>
+                                    • What to do when encounter OS&amp;D related issues
+                                </div>
+                            </div>
+                            <div class="rc-cat rc-cat-reporting">
+                                <div class="rc-cat-title">📊 Reporting</div>
+                                <div class="rc-cat-items">
+                                    • Lack of proactive management due to manual tasks required to identify issues<br>
+                                    • Absence of exception reporting<br>
+                                    • Heavy administrative and manual tasks<br>
+                                    • Inefficient communication methods (email vs. phone), further hinder effective management
+                                </div>
+                            </div>
+                            <div class="rc-cat rc-cat-maintenance">
+                                <div class="rc-cat-title">🔧 Maintenance &amp; Hardware</div>
+                                <div class="rc-cat-items">
+                                    • Overdue reefer services (17%)<br>
+                                    • Ineffective response to preventative alerts — not urgent until "shut down" or "act now" alert is received<br>
+                                    • Fuel alerts received for low fuel, load looks to be empty
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN: Solutions & Implementation -->
+            <div class="column column-right">
+
+                <!-- (E) Goal -->
+                <div class="section" style="flex: 0;">
+                    <div class="section-header bg-teal">
+                        <span class="letter">(E)</span> Goal
+                    </div>
+                    <div class="section-content" style="padding: 1.5mm 3mm;">
+                        <div style="font-size: 10pt; line-height: 1.5;">
+                            <strong>Preventable Cargo Claims per 1,000 Orders:</strong> <span style="color: #dc2626; font-weight: 700;">0.61</span> <span style="color: #9ca3af;">→</span> <span style="color: #059669; font-weight: 700;">0.30</span> <span style="color: #6b7280;">(goal)</span> &nbsp;📅 <span style="color: #d97706; font-weight: 600;">Target: March 31, 2026</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- (F) Proposed Countermeasures -->
+                <div class="section" style="flex: 1;">
+                    <div class="section-header bg-blue">
+                        <span class="letter">(F)</span> Proposed Countermeasures
+                    </div>
+                    <div class="section-content" style="padding: 2mm; font-size: 8pt; line-height: 1.4; color: #000000;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2mm;">
+                            <div>
+                                • Streamline QA workflows to catch shipment and equipment issues earlier.<br>
+                                • Tighten OS&amp;D processes to improve communication and collaboration between operations and customers.<br>
+                                • Automate e‑call checks to verify load details and prevent product from remaining on trailers.<br>
+                                • Migrate all customers from the legacy EDI system to the Orderful platform to ensure accurate capture of temperature setpoints.<br>
+                                • Clean and standardize geofence tables to remove duplicates, improve reporting accuracy, and support automated arrival/departure events.<br>
+                                • Fix the AS400-to-Mastermind issue where blank temperature fields are converted to zero instead of remaining empty.
+                            </div>
+                            <div>
+                                • Build a Cargo Variance Dashboard to give maintenance, operations, and QA real‑time visibility into reefer setpoints and temperature exceptions.<br>
+                                • Establish unique customer codes by enforcing deduplication rules and standardizing the code creation process.<br>
+                                • Advance the Intelliset program with updated training and technology to clearly distinguish new vs. legacy settings.<br>
+                                • Implement a tiered loaded‑trailer escalation process (T1/T2/T3) based on load value, freight sensitivity, seasonal risk, and customer requirements.<br>
+                                • Automate L‑call processes so customer temperature/mode requirements flow directly and accurately to the reefer unit.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- (G) Implementation Plan -->
+                <div class="section" style="flex: 0;">
+                    <div class="section-header bg-blue-light">
+                        <span class="letter">(G)</span> Implementation Plan
+                    </div>
+                    <div class="section-content" style="padding: 2mm;">
+                        <div style="font-size: 11pt; margin-bottom: 2mm;"><strong style="color: #059669;">11 Completed</strong> | <strong style="color: #d97706;">2 🏈 ON THE FIELD</strong> | <strong style="color: #6b7280;">8 On the Bench</strong></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2mm;">
+                            <!-- COMPLETE Column -->
+                            <div style="background: #d1fae5; border-radius: 2mm; padding: 2mm;">
+                                <div style="font-size: 11pt; font-weight: 700; color: #065f46; margin-bottom: 2mm; border-bottom: 1px solid #059669; padding-bottom: 1mm;">✅ COMPLETED (11)</div>
+                                <div style="font-size: 8pt; line-height: 1.6; color: #374151;">
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Empty Call – Phase I</div>
+
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Anatomy of Cargo Claim &gt;$5K</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">EDI Replatforming [PRD-91]</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Geofence Cleanup Phase I [PRD-118]</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">OS&D Workflow</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">QA Workflow</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Driver Notifications</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Training on Walmart Pre-loaded Trailers</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">AS400 to Mastermind Temp Issues</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Reporting Queue</div>
+                                    <div style="padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Enhanced Empty Call [PRD-361, PRD-389]</div>
+                                </div>
+                            </div>
+                            <!-- ON THE FIELD Column -->
+                            <div style="background: #fef3c7; border-radius: 2mm; padding: 2mm;">
+                                <div style="font-size: 11pt; font-weight: 700; color: #92400e; margin-bottom: 2mm; border-bottom: 1px solid #d97706; padding-bottom: 1mm;">🏈 ON THE FIELD (2)</div>
+                                <div style="font-size: 8pt; line-height: 1.6; color: #374151;">
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Reefer Pre-Sets / Intellisets Campaign</div>
+                                    <div style="padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Cargo Thefts - Trailer Seal Campaign</div>
+                                </div>
+                            </div>
+                            <!-- ON THE BENCH Column -->
+                            <div style="background: #e5e7eb; border-radius: 2mm; padding: 2mm;">
+                                <div style="font-size: 11pt; font-weight: 700; color: #374151; margin-bottom: 2mm; border-bottom: 1px solid #9ca3af; padding-bottom: 1mm;">⏸️ ON THE BENCH (8)</div>
+                                <div style="font-size: 8pt; line-height: 1.6; color: #4b5563;">
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">OS&D Billing Process (after other enhancements)</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Yard Check Standardization</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Enhanced Cargo Claim training for orientation, operations and customers</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">New Customer Onboarding with OS&D process</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Kickback Loaded Calls &amp; Manual Workarounds</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">T-Call Process</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Commodity Codes</div>
+                                    <div style="padding: 1mm 1.5mm; background: white; border-radius: 1mm;">OS&D Billing Process</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Technology & On Hold Side by Side -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; margin-top: 2mm;">
+                            <div style="background: #dbeafe; border-radius: 2mm; padding: 2mm;">
+                                <div style="font-size: 11pt; font-weight: 700; color: #1e3a5f; margin-bottom: 2mm; border-bottom: 1px solid #3b82f6; padding-bottom: 1mm;">💻 TECHNOLOGY</div>
+                                <div style="font-size: 8pt; line-height: 1.6; color: #374151;">
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Streamlined OS&D Workflow [PRD-416]</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">QA Workflow Enhancements [PRD-114]</div>
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Loaded Call Enhancements [PRD-181, PRD-361]</div>
+                                    <div style="padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Route Lines Automation [PRD-389]</div>
+                                </div>
+                            </div>
+                            <div style="background: #fce7f3; border-radius: 2mm; padding: 2mm;">
+                                <div style="font-size: 11pt; font-weight: 700; color: #9d174d; margin-bottom: 2mm; border-bottom: 1px solid #ec4899; padding-bottom: 1mm;">🚫 ON HOLD (2)</div>
+                                <div style="font-size: 8pt; line-height: 1.6; color: #374151;">
+                                    <div style="margin-bottom: 1mm; padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Trailer Data Integrity (trailer A3)</div>
+                                    <div style="padding: 1mm 1.5mm; background: white; border-radius: 1mm;">Red Tag Process (trailer A3)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- (H) Validate Results & After Action Review -->
+                <div class="section" style="flex: 1;">
+                    <div class="section-header bg-slate">
+                        <span class="letter">(H)</span> Validate Results &amp; After Action Review
+                    </div>
+                    <div class="section-content" style="padding: 2mm;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>

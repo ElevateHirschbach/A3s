@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A3 Problem Solving Template</title>
+    <style>
+        @font-face { font-family: 'Gilroy'; font-weight: 400; font-style: normal; src: local('Gilroy Regular'), local('Gilroy-Regular'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 700; font-style: normal; src: local('Gilroy Bold'), local('Gilroy-Bold'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 800; font-style: normal; src: local('Gilroy ExtraBold'), local('Gilroy-ExtraBold'); }
+    </style>
+    <style>
+        :root {
+            --green-bg: #2d5a27;
+            --green-current: #4a7c43;
+            --red-problem: #a62c21;
+            --red-root: #8b2920;
+            --blue-goals: #1a4a4a;
+            --blue-counter: #1e3a5f;
+            --blue-implement: #234b73;
+            --slate-validate: #4a6670;
+            --section-bg-left: #d4dfe4;
+            --section-bg-right: #e8eef1;
+            --text-primary: #1a1a1a;
+            --text-secondary: #374151;
+            --text-light: #ffffff;
+            --hirschbach-orange: #e87722;
+            --hirschbach-dark: #2b2b2b;
+        }
+
+        @page { size: A3 landscape; margin: 6mm; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Gilroy', 'Inter', -apple-system, sans-serif;
+            background: #e8e8e8;
+            color: var(--text-primary);
+            font-size: 12pt;
+            line-height: 1.45;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ── TOOLBAR (hidden on print) ── */
+        .toolbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            font-size: 10pt;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 16px; }
+        .toolbar-left .tb-title { font-weight: 800; font-size: 13pt; letter-spacing: -0.3px; }
+        .toolbar-left .tb-hint { font-size: 9pt; opacity: 0.65; }
+        .toolbar-right { display: flex; align-items: center; gap: 10px; }
+        .toolbar button {
+            padding: 7px 18px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 10pt;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .btn-print { background: #22c55e; color: white; }
+        .btn-print:hover { background: #16a34a; transform: translateY(-1px); }
+        .btn-save { background: #3b82f6; color: white; }
+        .btn-save:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-clear { background: #64748b; color: white; }
+        .btn-clear:hover { background: #475569; }
+
+        .page-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 60px 0 40px;
+        }
+
+        @media print {
+            .toolbar { display: none !important; }
+            .page-wrap { padding: 0; }
+            body { background: white; }
+        }
+
+        /* ── A3 CONTAINER ── */
+        .a3-container {
+            width: 420mm;
+            height: 297mm;
+            padding: 5mm;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 2mm;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2mm;
+            border-bottom: 2.5px solid var(--hirschbach-dark);
+        }
+        .header-left { display: flex; align-items: center; gap: 4mm; }
+
+        .logo-placeholder {
+            width: 18mm; height: 18mm;
+            background: linear-gradient(135deg, #1e3a5f, #2d5a27);
+            border-radius: 2mm;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; color: white; text-align: center; font-weight: 700;
+        }
+
+        .title-area h1 {
+            font-size: 24pt; font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            min-width: 100mm;
+        }
+        .title-area .subtitle {
+            font-size: 10pt;
+            color: var(--text-secondary);
+            margin-top: 0.5mm;
+        }
+
+        .header-right { text-align: right; font-size: 9pt; color: var(--text-secondary); }
+        .header-right .date { font-weight: 600; font-size: 10pt; color: var(--text-primary); }
+
+        /* ── TEAM BAR ── */
+        .team-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2mm;
+            padding: 1.5mm 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 9pt;
+        }
+        .team-item label {
+            font-size: 7pt; color: #666;
+            text-transform: uppercase; letter-spacing: 0.3px;
+            display: block;
+        }
+        .team-item span {
+            font-weight: 600; color: var(--text-primary); font-size: 9pt;
+        }
+
+        /* ── MAIN GRID ── */
+        .main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2mm;
+        }
+
+        .column { display: flex; flex-direction: column; gap: 1.5mm; }
+        .column-left { background: var(--section-bg-left); border-radius: 2mm; padding: 1.5mm; }
+        .column-right { background: var(--section-bg-right); border-radius: 2mm; padding: 1.5mm; }
+
+        /* ── SECTIONS ── */
+        .section { display: flex; flex-direction: column; flex: 1; }
+
+        .section-header {
+            padding: 2mm 3mm;
+            border-radius: 1.5mm 1.5mm 0 0;
+            color: white;
+            font-weight: 700;
+            font-size: 11pt;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+        .section-header .letter { font-weight: 800; }
+
+        .bg-green { background: var(--green-bg); }
+        .bg-green-current { background: var(--green-current); }
+        .bg-red { background: var(--red-problem); }
+        .bg-red-dark { background: var(--red-root); }
+        .bg-teal { background: var(--blue-goals); }
+        .bg-blue { background: var(--blue-counter); }
+        .bg-blue-light { background: var(--blue-implement); }
+        .bg-slate { background: var(--slate-validate); }
+
+        .section-content {
+            flex: 1;
+            background: white;
+            padding: 2mm;
+            border-radius: 0 0 1.5mm 1.5mm;
+            font-size: 9pt;
+            color: var(--text-secondary);
+        }
+
+        /* ── EDITABLE AREAS ── */
+        [contenteditable="true"] {
+            outline: none;
+            min-height: 1em;
+            transition: background 0.15s ease;
+            border-radius: 1mm;
+        }
+        [contenteditable="true"]:hover {
+            background: rgba(59, 130, 246, 0.04);
+        }
+        [contenteditable="true"]:focus {
+            background: rgba(59, 130, 246, 0.07);
+            box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.25);
+        }
+
+        .placeholder-text {
+            color: #aab4c0;
+            font-style: italic;
+        }
+        [contenteditable="true"]:focus .placeholder-text,
+        [contenteditable="true"].has-content .placeholder-text {
+            display: none;
+        }
+
+        /* ── GOAL METRIC BOX ── */
+        .goal-metric {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-radius: 2mm;
+            padding: 3mm;
+            text-align: center;
+        }
+        .goal-metric .number { font-size: 20pt; font-weight: 700; color: #065f46; }
+        .goal-metric .label { font-size: 9pt; color: #047857; margin-top: 1mm; }
+        .goal-metric .deadline { font-size: 9pt; color: #059669; margin-top: 2mm; padding-top: 2mm; border-top: 1px solid rgba(0,0,0,0.1); }
+
+        .progress-bar { display: flex; align-items: center; gap: 2mm; margin-top: 2mm; }
+        .progress-track { flex: 1; height: 3mm; background: linear-gradient(90deg, #ef4444, #fbbf24, #22c55e); border-radius: 1.5mm; }
+
+        /* ── IMPLEMENTATION COLUMNS ── */
+        .impl-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2mm;
+        }
+        .impl-col {
+            border-radius: 2mm;
+            padding: 2mm;
+        }
+        .impl-col-complete { background: #d1fae5; }
+        .impl-col-progress { background: #fef3c7; }
+        .impl-col-bench { background: #e5e7eb; }
+
+        .impl-col-header {
+            font-size: 10pt;
+            font-weight: 700;
+            margin-bottom: 1.5mm;
+            padding-bottom: 1mm;
+            border-bottom: 1px solid;
+        }
+        .impl-col-complete .impl-col-header { color: #065f46; border-color: #059669; }
+        .impl-col-progress .impl-col-header { color: #92400e; border-color: #d97706; }
+        .impl-col-bench .impl-col-header { color: #374151; border-color: #9ca3af; }
+
+        .impl-col-body {
+            font-size: 8pt;
+            line-height: 1.5;
+        }
+
+        /* ── ROOT CAUSE CATEGORIES ── */
+        .rc-categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5mm;
+            margin-top: 1.5mm;
+        }
+        .rc-cat { padding: 1.5mm; border-radius: 1.5mm; font-size: 8pt; }
+        .rc-cat-1 { background: #fef3c7; border-left: 2px solid #d97706; }
+        .rc-cat-2 { background: #dbeafe; border-left: 2px solid #2563eb; }
+        .rc-cat-3 { background: #d1fae5; border-left: 2px solid #059669; }
+        .rc-cat-title { font-weight: 700; margin-bottom: 0.5mm; font-size: 8pt; }
+
+        /* ── IMPACT CALLOUT ── */
+        .impact-callout {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 3px solid #d97706;
+            border-radius: 1.5mm;
+            padding: 2mm 3mm;
+            margin-top: 2mm;
+            font-size: 9pt;
+        }
+
+        /* ── VALIDATE GRID ── */
+        .validate-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3mm;
+        }
+        .review-box {
+            background: #f0f4f8;
+            border-radius: 1.5mm;
+            padding: 2mm;
+        }
+        .review-box-title {
+            font-size: 11pt;
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 1mm;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 7pt;
+            color: #999;
+            padding-top: 1mm;
+            border-top: 1px solid #ddd;
+        }
+
+        /* ── MONDAY CALLOUT ── */
+        .monday-callout {
+            background: linear-gradient(135deg, #6c3fc5, #4f2d96);
+            color: white; font-weight: 700; font-size: 9pt;
+            padding: 1.5mm 3mm; border-radius: 1.5mm;
+            margin-top: 2mm;
+            display: flex; align-items: center; gap: 2mm;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── TOOLBAR ── -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <span class="tb-title">A3 Problem Solving Template</span>
+            <span class="tb-hint">Click any text area to edit &nbsp;•&nbsp; Ctrl+P to print</span>
+        </div>
+        <div class="toolbar-right">
+            <button class="btn-clear" onclick="clearAll()">↺ Reset All</button>
+            <button class="btn-save" onclick="saveHTML()">💾 Save HTML</button>
+            <button class="btn-print" onclick="window.print()">🖨 Print A3</button>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+        <div class="a3-container">
+
+            <!-- ══════════════ HEADER ══════════════ -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-placeholder">YOUR<br>LOGO</div>
+                    <div class="title-area">
+                        <h1 contenteditable="true">A3 Title — Your Topic</h1>
+                        <div class="subtitle" contenteditable="true">A3 Problem Solving · Process Improvement</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date" contenteditable="true">Date: MM/DD/YYYY</div>
+                    <div contenteditable="true">Version: 1.0</div>
+                    <div contenteditable="true">Doc ID: A3-XXX-2025-001</div>
+                </div>
+            </div>
+
+            <!-- ══════════════ TEAM BAR ══════════════ -->
+            <div class="team-bar">
+                <div class="team-item">
+                    <label>Executive Sponsor</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="team-item">
+                    <label>Project Manager</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="team-item">
+                    <label>Team Lead</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="team-item">
+                    <label>Process Owner</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="team-item">
+                    <label>Data / Analytics</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="team-item">
+                    <label>Department</label>
+                    <span contenteditable="true">Department</span>
+                </div>
+            </div>
+
+            <!-- ══════════════ MAIN GRID ══════════════ -->
+            <div class="main-grid">
+
+                <!-- ─────── LEFT COLUMN: Problem Side ─────── -->
+                <div class="column column-left">
+
+                    <!-- (A) Background -->
+                    <div class="section" style="flex: 1;">
+                        <div class="section-header bg-green">
+                            <span class="letter">(A)</span> Background
+                        </div>
+                        <div class="section-content" contenteditable="true">
+                            <div class="placeholder-text">Describe the context and background of the problem. What is the business situation? Why does this matter now? Include relevant history, scope, and any key data that frames the issue.</div>
+                        </div>
+                    </div>
+
+                    <!-- (B) Current Condition -->
+                    <div class="section" style="flex: 1.2;">
+                        <div class="section-header bg-green-current">
+                            <span class="letter">(B)</span> Current Condition
+                        </div>
+                        <div class="section-content">
+                            <div contenteditable="true">
+                                <div class="placeholder-text">Describe the current state with data. What does the process look like today? Include metrics, charts descriptions, or key performance indicators that illustrate the current situation.</div>
+                            </div>
+                            <div class="impact-callout" style="margin-top: 2mm;">
+                                <div contenteditable="true"><strong>📊 Key Metric:</strong> <span class="placeholder-text">e.g., Current rate is X — target is Y</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- (C) Problem Statement -->
+                    <div class="section" style="flex: 0.8;">
+                        <div class="section-header bg-red">
+                            <span class="letter">(C)</span> Problem Statement
+                        </div>
+                        <div class="section-content" contenteditable="true">
+                            <div class="placeholder-text">Define the specific problem. What is the gap between the current condition and the desired state? Be specific and measurable. A good problem statement includes WHAT the problem is, WHERE it occurs, WHEN it started, and HOW BIG the impact is.</div>
+                        </div>
+                    </div>
+
+                    <!-- (D) Root Cause Analysis -->
+                    <div class="section" style="flex: 1.2;">
+                        <div class="section-header bg-red-dark">
+                            <span class="letter">(D)</span> Root Cause Analysis
+                        </div>
+                        <div class="section-content">
+                            <div contenteditable="true" style="margin-bottom: 1.5mm;">
+                                <div class="placeholder-text">What are the root causes? Use 5-Why analysis, fishbone diagrams, or other methods. Describe the analysis that led to identifying these causes.</div>
+                            </div>
+                            <div class="rc-categories">
+                                <div class="rc-cat rc-cat-1">
+                                    <div class="rc-cat-title" contenteditable="true">Category 1</div>
+                                    <div contenteditable="true"><span class="placeholder-text">e.g., Structural root causes</span></div>
+                                </div>
+                                <div class="rc-cat rc-cat-2">
+                                    <div class="rc-cat-title" contenteditable="true">Category 2</div>
+                                    <div contenteditable="true"><span class="placeholder-text">e.g., Operational root causes</span></div>
+                                </div>
+                                <div class="rc-cat rc-cat-3">
+                                    <div class="rc-cat-title" contenteditable="true">Category 3</div>
+                                    <div contenteditable="true"><span class="placeholder-text">e.g., Cultural root causes</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ─────── RIGHT COLUMN: Solutions Side ─────── -->
+                <div class="column column-right">
+
+                    <!-- (E) Goals -->
+                    <div class="section" style="flex: 0.8;">
+                        <div class="section-header bg-teal">
+                            <span class="letter">(E)</span> Goals
+                        </div>
+                        <div class="section-content">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3mm;">
+                                <div class="goal-metric">
+                                    <div class="number" contenteditable="true">—%</div>
+                                    <div class="label" contenteditable="true">Primary Goal Metric</div>
+                                    <div class="deadline" contenteditable="true">📅 Target: MM/DD/YYYY</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 9pt; font-weight: 600; margin-bottom: 2mm;">From → To</div>
+                                    <div class="progress-bar">
+                                        <span style="font-size: 9pt; color: #ef4444; font-weight: 700;" contenteditable="true">X%</span>
+                                        <div class="progress-track"></div>
+                                        <span style="font-size: 9pt; color: #22c55e; font-weight: 700;" contenteditable="true">Y%</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 8pt; color: #666; margin-top: 1mm;">
+                                        <span>Current</span>
+                                        <span>Target</span>
+                                    </div>
+                                    <div style="font-size: 8pt; margin-top: 2mm; background: #f0fdf4; padding: 1.5mm; border-radius: 1mm;" contenteditable="true">
+                                        <span class="placeholder-text"><strong>Secondary Goal:</strong> Describe additional goals or milestones here</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- (F) Proposed Countermeasures -->
+                    <div class="section" style="flex: 1.2;">
+                        <div class="section-header bg-blue">
+                            <span class="letter">(F)</span> Proposed Countermeasures
+                        </div>
+                        <div class="section-content" contenteditable="true">
+                            <div class="placeholder-text">List the countermeasures that address each root cause. Number them and describe each briefly. Include the "what" and the "why." Consider organizing in two columns for space efficiency. Example format:<br><br>• <strong>Countermeasure 1</strong> — Description of action and expected impact<br>• <strong>Countermeasure 2</strong> — Description of action and expected impact<br>• <strong>Countermeasure 3</strong> — Description of action and expected impact</div>
+                        </div>
+                    </div>
+
+                    <!-- (G) Implementation Plan -->
+                    <div class="section" style="flex: 1.2;">
+                        <div class="section-header bg-blue-light">
+                            <span class="letter">(G)</span> Implementation Plan
+                        </div>
+                        <div class="section-content">
+                            <div style="font-size: 10pt; margin-bottom: 2mm;">
+                                <strong style="color: #059669;" contenteditable="true">0 Completed</strong> |
+                                <strong style="color: #d97706;" contenteditable="true">0 On the Field</strong> |
+                                <strong style="color: #6b7280;" contenteditable="true">0 On the Bench</strong>
+                            </div>
+                            <div class="impl-columns">
+                                <!-- COMPLETED -->
+                                <div class="impl-col impl-col-complete">
+                                    <div class="impl-col-header">✅ COMPLETED</div>
+                                    <div class="impl-col-body" contenteditable="true">
+                                        <div class="placeholder-text">List completed items here</div>
+                                    </div>
+                                </div>
+                                <!-- ON THE FIELD -->
+                                <div class="impl-col impl-col-progress">
+                                    <div class="impl-col-header">🏈 ON THE FIELD</div>
+                                    <div class="impl-col-body" contenteditable="true">
+                                        <div class="placeholder-text">List items currently in progress</div>
+                                    </div>
+                                </div>
+                                <!-- ON THE BENCH -->
+                                <div class="impl-col impl-col-bench">
+                                    <div class="impl-col-header">⏸️ ON THE BENCH</div>
+                                    <div class="impl-col-body" contenteditable="true">
+                                        <div class="placeholder-text">List items queued for later</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="monday-callout">
+                                <svg style="width:4mm;height:4mm" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10"/></svg>
+                                <span contenteditable="true"><strong>Full tracking in Monday.com</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- (H) Validate Results & After Action Review -->
+                    <div class="section" style="flex: 0.8;">
+                        <div class="section-header bg-slate">
+                            <span class="letter">(H)</span> Validate Results &amp; After Action Review
+                        </div>
+                        <div class="section-content">
+                            <div class="validate-grid">
+                                <div>
+                                    <div style="font-size: 9pt; font-weight: 600; margin-bottom: 1mm;">Key Metrics to Track</div>
+                                    <div style="font-size: 9pt;" contenteditable="true">
+                                        <div class="placeholder-text">• Metric 1<br>• Metric 2<br>• Metric 3<br>• Metric 4<br>• Metric 5</div>
+                                    </div>
+                                </div>
+                                <div class="review-box">
+                                    <div class="review-box-title">📅 Review Schedule</div>
+                                    <div style="font-size: 9pt;" contenteditable="true">
+                                        <div class="placeholder-text"><strong>Daily:</strong> Description<br><strong>Weekly:</strong> Description<br><strong>Monthly:</strong> Description</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ══════════════ FOOTER ══════════════ -->
+            <div class="footer">
+                <div contenteditable="true"><strong>Hirschbach Process Improvement</strong> | A3 Problem Solving</div>
+                <div contenteditable="true">"Every Process. Every Person. Every Day."</div>
+                <div contenteditable="true">Team: List team members here</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ── Placeholder behavior ──
+        // When user focuses an editable area with placeholder text, clear it.
+        // When they blur and it's empty, restore placeholder.
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            const placeholder = el.querySelector('.placeholder-text');
+            if (!placeholder) return;
+            const originalHTML = placeholder.outerHTML;
+
+            el.addEventListener('focus', function() {
+                if (this.querySelector('.placeholder-text')) {
+                    this.innerHTML = '';
+                }
+            });
+
+            el.addEventListener('blur', function() {
+                if (this.textContent.trim() === '') {
+                    this.innerHTML = originalHTML;
+                }
+            });
+        });
+
+        // ── Save as HTML ──
+        function saveHTML() {
+            // Remove toolbar from saved version
+            const clone = document.documentElement.cloneNode(true);
+            const toolbar = clone.querySelector('.toolbar');
+            if (toolbar) toolbar.remove();
+
+            // Remove the script tag
+            const scripts = clone.querySelectorAll('script');
+            scripts.forEach(s => s.remove());
+
+            // Remove page-wrap padding for saved version
+            const pageWrap = clone.querySelector('.page-wrap');
+            if (pageWrap) pageWrap.style.padding = '0';
+
+            // Build clean HTML
+            const html = '<!DOCTYPE html>\n<html lang="en">\n' + clone.innerHTML + '\n</html>';
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+
+            // Use the title content for filename
+            const titleEl = document.querySelector('.title-area h1');
+            const title = titleEl ? titleEl.textContent.trim().replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '_') : 'A3_Template';
+
+            a.href = url;
+            a.download = title + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ── Clear all editable fields ──
+        function clearAll() {
+            if (!confirm('Reset all fields to blank? This cannot be undone.')) return;
+            location.reload();
+        }
+    </script>
+</body>
+</html>

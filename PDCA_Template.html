@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDCA Problem Solving Template</title>
+    <style>
+        @font-face { font-family: 'Gilroy'; font-weight: 400; font-style: normal; src: local('Gilroy Regular'), local('Gilroy-Regular'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 700; font-style: normal; src: local('Gilroy Bold'), local('Gilroy-Bold'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 800; font-style: normal; src: local('Gilroy ExtraBold'), local('Gilroy-ExtraBold'); }
+    </style>
+    <style>
+        :root {
+            --plan-color: #1e3a5f;
+            --do-color: #2d5a27;
+            --check-color: #e87722;
+            --act-color: #a62c21;
+            --text-primary: #1a1a1a;
+            --text-secondary: #374151;
+            --hirschbach-dark: #2b2b2b;
+        }
+
+        @page { size: A3 landscape; margin: 6mm; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Gilroy', 'Inter', -apple-system, sans-serif;
+            background: #e8e8e8;
+            color: var(--text-primary);
+            font-size: 12pt;
+            line-height: 1.45;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            font-size: 10pt;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 16px; }
+        .toolbar-left .tb-title { font-weight: 800; font-size: 13pt; letter-spacing: -0.3px; }
+        .toolbar-left .tb-hint { font-size: 9pt; opacity: 0.65; }
+        .toolbar-right { display: flex; align-items: center; gap: 10px; }
+        .toolbar button {
+            padding: 7px 18px; border: none; border-radius: 6px;
+            font-family: inherit; font-weight: 700; font-size: 10pt;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .btn-print { background: #22c55e; color: white; }
+        .btn-print:hover { background: #16a34a; transform: translateY(-1px); }
+        .btn-save { background: #3b82f6; color: white; }
+        .btn-save:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-clear { background: #64748b; color: white; }
+        .btn-clear:hover { background: #475569; }
+
+        .page-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 60px 0 40px;
+        }
+
+        @media print {
+            .toolbar { display: none !important; }
+            .page-wrap { padding: 0; }
+            body { background: white; }
+        }
+
+        /* ── A3 CONTAINER ── */
+        .a3-container {
+            width: 420mm;
+            height: 297mm;
+            padding: 5mm;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            gap: 2mm;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2mm;
+            border-bottom: 2.5px solid var(--hirschbach-dark);
+        }
+        .header-left { display: flex; align-items: center; gap: 4mm; }
+        .logo-placeholder {
+            width: 18mm; height: 18mm;
+            background: linear-gradient(135deg, var(--plan-color), var(--do-color));
+            border-radius: 2mm;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8pt; color: white; text-align: center; font-weight: 700;
+        }
+        .title-area h1 {
+            font-size: 24pt; font-weight: 800;
+            color: var(--text-primary); letter-spacing: -0.5px;
+            min-width: 100mm;
+        }
+        .title-area .subtitle {
+            font-size: 10pt; color: var(--text-secondary); margin-top: 0.5mm;
+        }
+        .header-right { text-align: right; font-size: 9pt; color: var(--text-secondary); }
+        .header-right .date { font-weight: 600; font-size: 10pt; color: var(--text-primary); }
+
+        /* ── INFO BAR ── */
+        .info-bar {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 2mm;
+            padding: 1.5mm 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 9pt;
+        }
+        .info-item label {
+            font-size: 7pt; color: #666;
+            text-transform: uppercase; letter-spacing: 0.3px; display: block;
+        }
+        .info-item span {
+            font-weight: 600; color: var(--text-primary); font-size: 9pt;
+        }
+
+        /* ── PDCA CYCLE INDICATOR ── */
+        .pdca-cycle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            padding: 1.5mm 0;
+        }
+        .cycle-step {
+            flex: 1;
+            text-align: center;
+            padding: 2mm 0;
+            font-weight: 800;
+            font-size: 11pt;
+            color: white;
+            letter-spacing: 1px;
+        }
+        .cycle-step:first-child { border-radius: 2mm 0 0 2mm; }
+        .cycle-step:last-child { border-radius: 0 2mm 2mm 0; }
+        .cycle-plan { background: var(--plan-color); }
+        .cycle-do { background: var(--do-color); }
+        .cycle-check { background: var(--check-color); }
+        .cycle-act { background: var(--act-color); }
+
+        /* ── MAIN GRID (2x2) ── */
+        .main-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2mm;
+        }
+
+        .quadrant {
+            display: flex;
+            flex-direction: column;
+            border-radius: 2mm;
+            overflow: hidden;
+        }
+
+        .quad-header {
+            padding: 3mm 4mm;
+            color: white;
+            font-weight: 700;
+            font-size: 13pt;
+            display: flex;
+            align-items: center;
+            gap: 3mm;
+        }
+        .quad-header .step-num {
+            font-weight: 800;
+            font-size: 14pt;
+            opacity: 0.7;
+        }
+
+        .quad-body {
+            flex: 1;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 2mm 2mm;
+            display: flex;
+            flex-direction: column;
+            gap: 2mm;
+            padding: 3mm;
+        }
+
+        /* ── Sub-sections inside each quadrant ── */
+        .sub-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .sub-header {
+            font-size: 9pt;
+            font-weight: 700;
+            color: white;
+            padding: 1.5mm 3mm;
+            border-radius: 1.5mm 1.5mm 0 0;
+        }
+        .sub-content {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid #e8ecf0;
+            border-top: none;
+            border-radius: 0 0 1.5mm 1.5mm;
+            padding: 2mm;
+            font-size: 9pt;
+            color: var(--text-secondary);
+        }
+
+        /* Quadrant-specific sub-header colors */
+        .q-plan .sub-header { background: var(--plan-color); }
+        .q-do .sub-header { background: var(--do-color); }
+        .q-check .sub-header { background: var(--check-color); }
+        .q-act .sub-header { background: var(--act-color); }
+
+        /* Lighter tints for quadrant backgrounds */
+        .q-plan { background: #edf2f8; }
+        .q-do { background: #edf5ec; }
+        .q-check { background: #fdf3ea; }
+        .q-act { background: #f8edec; }
+
+        /* ── EDITABLE AREAS ── */
+        [contenteditable="true"] {
+            outline: none;
+            min-height: 1em;
+            transition: background 0.15s ease;
+            border-radius: 1mm;
+        }
+        [contenteditable="true"]:hover { background: rgba(59, 130, 246, 0.04); }
+        [contenteditable="true"]:focus {
+            background: rgba(59, 130, 246, 0.07);
+            box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.25);
+        }
+
+        .placeholder-text {
+            color: #aab4c0;
+            font-style: italic;
+        }
+
+        /* ── IMPL columns (reusable) ── */
+        .impl-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2mm;
+        }
+        .impl-col {
+            border-radius: 1.5mm;
+            padding: 2mm;
+            font-size: 8pt;
+        }
+        .impl-col-header {
+            font-size: 9pt; font-weight: 700;
+            margin-bottom: 1mm; padding-bottom: 1mm;
+            border-bottom: 1px solid;
+        }
+        .col-done { background: #d1fae5; }
+        .col-done .impl-col-header { color: #065f46; border-color: #059669; }
+        .col-todo { background: #fef3c7; }
+        .col-todo .impl-col-header { color: #92400e; border-color: #d97706; }
+
+        /* ── Key metric callout ── */
+        .metric-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2mm;
+        }
+        .metric-box {
+            text-align: center;
+            padding: 2mm;
+            border-radius: 1.5mm;
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+        .metric-box .num {
+            font-size: 16pt; font-weight: 700;
+        }
+        .metric-box .lbl {
+            font-size: 8pt; color: #666; margin-top: 0.5mm;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 7pt;
+            color: #999;
+            padding-top: 1mm;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── TOOLBAR ── -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <span class="tb-title">PDCA Problem Solving Template</span>
+            <span class="tb-hint">Click any text area to edit · Ctrl+P to print</span>
+        </div>
+        <div class="toolbar-right">
+            <button class="btn-clear" onclick="clearAll()">↺ Reset All</button>
+            <button class="btn-save" onclick="saveHTML()">💾 Save HTML</button>
+            <button class="btn-print" onclick="window.print()">🖨 Print A3</button>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+        <div class="a3-container">
+
+            <!-- ══════════ HEADER ══════════ -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-placeholder">YOUR<br>LOGO</div>
+                    <div class="title-area">
+                        <h1 contenteditable="true">PDCA Title — Your Topic</h1>
+                        <div class="subtitle" contenteditable="true">PDCA Cycle · Departmental Problem Solving</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date" contenteditable="true">Date: MM/DD/YYYY</div>
+                    <div contenteditable="true">Version: 1.0</div>
+                    <div contenteditable="true">Cycle #: 1</div>
+                </div>
+            </div>
+
+            <!-- ══════════ INFO BAR ══════════ -->
+            <div class="info-bar">
+                <div class="info-item">
+                    <label>Department</label>
+                    <span contenteditable="true">Department</span>
+                </div>
+                <div class="info-item">
+                    <label>Owner</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="info-item">
+                    <label>Sponsor</label>
+                    <span contenteditable="true">Name</span>
+                </div>
+                <div class="info-item">
+                    <label>Team Members</label>
+                    <span contenteditable="true">Names</span>
+                </div>
+                <div class="info-item">
+                    <label>Start Date</label>
+                    <span contenteditable="true">MM/DD/YYYY</span>
+                </div>
+                <div class="info-item">
+                    <label>Target Completion</label>
+                    <span contenteditable="true">MM/DD/YYYY</span>
+                </div>
+            </div>
+
+            <!-- ══════════ PDCA CYCLE BAR ══════════ -->
+            <div class="pdca-cycle">
+                <div class="cycle-step cycle-plan">PLAN</div>
+                <div class="cycle-step cycle-do">DO</div>
+                <div class="cycle-step cycle-check">CHECK</div>
+                <div class="cycle-step cycle-act">ACT</div>
+            </div>
+
+            <!-- ══════════ MAIN 2×2 GRID ══════════ -->
+            <div class="main-grid">
+
+                <!-- ─── PLAN (Top Left) ─── -->
+                <div class="quadrant q-plan">
+                    <div class="quad-header" style="background: var(--plan-color);">
+                        <span class="step-num">1</span> PLAN — Identify &amp; Analyze
+                    </div>
+                    <div class="quad-body">
+                        <!-- Problem Statement -->
+                        <div class="sub-section">
+                            <div class="sub-header">Problem Statement</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">What is the problem? Be specific and measurable. Describe the gap between current and desired state. What is the impact?</div>
+                            </div>
+                        </div>
+                        <!-- Current State & Data -->
+                        <div class="sub-section">
+                            <div class="sub-header">Current State &amp; Data</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">What does the data show? Include current metrics, baseline measurements, and any trends. Go to the gemba — observe the process firsthand.</div>
+                            </div>
+                        </div>
+                        <!-- Root Cause -->
+                        <div class="sub-section">
+                            <div class="sub-header">Root Cause Analysis (5 Whys)</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">Why #1: Why does this problem exist?
+Why #2: Why is that?
+Why #3: Why?
+Why #4: Why?
+Why #5: Root cause →</div>
+                            </div>
+                        </div>
+                        <!-- Proposed Countermeasure -->
+                        <div class="sub-section">
+                            <div class="sub-header">Proposed Countermeasure &amp; Goal</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">What change will you test? What is the specific, measurable target? What is the timeline for this PDCA cycle?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── DO (Top Right) ─── -->
+                <div class="quadrant q-do">
+                    <div class="quad-header" style="background: var(--do-color);">
+                        <span class="step-num">2</span> DO — Test the Countermeasure
+                    </div>
+                    <div class="quad-body">
+                        <!-- Action Plan -->
+                        <div class="sub-section" style="flex: 1.5;">
+                            <div class="sub-header">Action Plan</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">List each action step needed to implement the countermeasure:
+
+Step 1: (What) — Owner — Due Date
+Step 2: (What) — Owner — Due Date
+Step 3: (What) — Owner — Due Date
+Step 4: (What) — Owner — Due Date
+Step 5: (What) — Owner — Due Date</div>
+                            </div>
+                        </div>
+                        <!-- Implementation Status -->
+                        <div class="sub-section" style="flex: 1;">
+                            <div class="sub-header">Implementation Status</div>
+                            <div class="sub-content">
+                                <div class="impl-columns">
+                                    <div class="impl-col col-done">
+                                        <div class="impl-col-header">✅ Done</div>
+                                        <div contenteditable="true">
+                                            <div class="placeholder-text">Completed steps</div>
+                                        </div>
+                                    </div>
+                                    <div class="impl-col col-todo">
+                                        <div class="impl-col-header">🔄 In Progress / Remaining</div>
+                                        <div contenteditable="true">
+                                            <div class="placeholder-text">Steps still in progress or pending</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Observations -->
+                        <div class="sub-section" style="flex: 0.8;">
+                            <div class="sub-header">Observations &amp; Notes During Testing</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">What was observed during implementation? Any unexpected issues, surprises, or resistance? Document what actually happened vs. what was planned.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── CHECK (Bottom Left) ─── -->
+                <div class="quadrant q-check">
+                    <div class="quad-header" style="background: var(--check-color);">
+                        <span class="step-num">3</span> CHECK — Measure Results
+                    </div>
+                    <div class="quad-body">
+                        <!-- Results vs Target -->
+                        <div class="sub-section" style="flex: 0.6;">
+                            <div class="sub-header">Results vs. Target</div>
+                            <div class="sub-content">
+                                <div class="metric-row">
+                                    <div class="metric-box">
+                                        <div class="num" style="color: #ef4444;" contenteditable="true">—</div>
+                                        <div class="lbl">Baseline (Before)</div>
+                                    </div>
+                                    <div class="metric-box">
+                                        <div class="num" style="color: var(--plan-color);" contenteditable="true">—</div>
+                                        <div class="lbl">Actual (After)</div>
+                                    </div>
+                                    <div class="metric-box">
+                                        <div class="num" style="color: #22c55e;" contenteditable="true">—</div>
+                                        <div class="lbl">Target Goal</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Data Analysis -->
+                        <div class="sub-section" style="flex: 1;">
+                            <div class="sub-header">Data Analysis &amp; Comparison</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">Compare before and after data. Did the countermeasure work? By how much? Include charts, tables, or trend descriptions. Was the target met, partially met, or missed?</div>
+                            </div>
+                        </div>
+                        <!-- What did we learn -->
+                        <div class="sub-section" style="flex: 1;">
+                            <div class="sub-header">What Did We Learn?</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">What worked well? What didn't? Were there unintended consequences — positive or negative? What surprised the team? What assumptions were confirmed or disproven?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── ACT (Bottom Right) ─── -->
+                <div class="quadrant q-act">
+                    <div class="quad-header" style="background: var(--act-color);">
+                        <span class="step-num">4</span> ACT — Standardize or Adjust
+                    </div>
+                    <div class="quad-body">
+                        <!-- Decision -->
+                        <div class="sub-section" style="flex: 0.5;">
+                            <div class="sub-header">Decision</div>
+                            <div class="sub-content">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2mm;">
+                                    <div style="background: #d1fae5; border-radius: 1.5mm; padding: 2mm; text-align: center;">
+                                        <div style="font-weight: 700; color: #065f46; font-size: 10pt;">✅ STANDARDIZE</div>
+                                        <div style="font-size: 8pt; color: #374151; margin-top: 1mm;">It worked — make it the new standard</div>
+                                    </div>
+                                    <div style="background: #fef3c7; border-radius: 1.5mm; padding: 2mm; text-align: center;">
+                                        <div style="font-weight: 700; color: #92400e; font-size: 10pt;">🔄 ADJUST</div>
+                                        <div style="font-size: 8pt; color: #374151; margin-top: 1mm;">Partially worked — modify and re-cycle</div>
+                                    </div>
+                                    <div style="background: #fee2e2; border-radius: 1.5mm; padding: 2mm; text-align: center;">
+                                        <div style="font-weight: 700; color: #991b1b; font-size: 10pt;">⏹ ABANDON</div>
+                                        <div style="font-size: 8pt; color: #374151; margin-top: 1mm;">Didn't work — try a different approach</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Standardization steps -->
+                        <div class="sub-section" style="flex: 1;">
+                            <div class="sub-header">Standardization / Next Steps</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">If standardizing: What SOPs, training, or process updates are needed to lock in the change? Who is responsible? When will it be rolled out?
+
+If adjusting: What will change in the next cycle? What hypothesis will you test next?
+
+If abandoning: What was learned? What alternative approach will be explored?</div>
+                            </div>
+                        </div>
+                        <!-- Follow-up / Next PDCA -->
+                        <div class="sub-section" style="flex: 0.7;">
+                            <div class="sub-header">Follow-Up &amp; Next PDCA Cycle</div>
+                            <div class="sub-content" contenteditable="true">
+                                <div class="placeholder-text">When will results be reviewed again? What is the next PDCA cycle topic or refinement? Who owns the follow-up? Set the review cadence (daily, weekly, monthly).</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ══════════ FOOTER ══════════ -->
+            <div class="footer">
+                <div contenteditable="true"><strong>Hirschbach Process Improvement</strong> | PDCA Problem Solving</div>
+                <div contenteditable="true">"Every Process. Every Person. Every Day."</div>
+                <div contenteditable="true">Team: List team members here</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            const placeholder = el.querySelector('.placeholder-text');
+            if (!placeholder) return;
+            const originalHTML = placeholder.outerHTML;
+            el.addEventListener('focus', function() {
+                if (this.querySelector('.placeholder-text')) this.innerHTML = '';
+            });
+            el.addEventListener('blur', function() {
+                if (this.textContent.trim() === '') this.innerHTML = originalHTML;
+            });
+        });
+
+        function saveHTML() {
+            const clone = document.documentElement.cloneNode(true);
+            const toolbar = clone.querySelector('.toolbar');
+            if (toolbar) toolbar.remove();
+            clone.querySelectorAll('script').forEach(s => s.remove());
+            const pageWrap = clone.querySelector('.page-wrap');
+            if (pageWrap) pageWrap.style.padding = '0';
+            const html = '<!DOCTYPE html>\n<html lang="en">\n' + clone.innerHTML + '\n</html>';
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const titleEl = document.querySelector('.title-area h1');
+            const title = titleEl ? titleEl.textContent.trim().replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '_') : 'PDCA_Template';
+            a.href = url;
+            a.download = title + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAll() {
+            if (!confirm('Reset all fields to blank? This cannot be undone.')) return;
+            location.reload();
+        }
+    </script>
+</body>
+</html>
