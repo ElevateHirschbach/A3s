@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="40%" stop-color="#162138"/>
+      <stop offset="80%" stop-color="#14283a"/>
+      <stop offset="100%" stop-color="#1a3030"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4a032"/>
+      <stop offset="100%" stop-color="#e8b84a"/>
+    </linearGradient>
+    <linearGradient id="corner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4a032"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="boxface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#c8964a"/>
+      <stop offset="100%" stop-color="#a67830"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" rx="36" fill="url(#bg)"/>
+  <rect x="32" y="0" width="536" height="6" fill="url(#gold)" rx="0"/>
+  <rect x="0" y="0" width="6" height="200" fill="url(#corner)" rx="0"/>
+  <!-- Box icon (isometric style) -->
+  <g transform="translate(300,195)" filter="url(#shadow)">
+    <!-- Box top face -->
+    <path d="M0,-65 L55,-35 L0,-5 L-55,-35 Z" fill="none" stroke="#c8964a" stroke-width="2.5" opacity="0.5"/>
+    <path d="M0,-65 L55,-35 L0,-5 L-55,-35 Z" fill="#c8964a" opacity="0.1"/>
+    <!-- Tape on top -->
+    <path d="M0,-65 L0,-5" stroke="#dbb870" stroke-width="6" opacity="0.25" stroke-linecap="round"/>
+    <!-- Box right face -->
+    <path d="M55,-35 L55,25 L0,55 L0,-5 Z" fill="none" stroke="#a67830" stroke-width="2.5" opacity="0.45"/>
+    <path d="M55,-35 L55,25 L0,55 L0,-5 Z" fill="#a67830" opacity="0.08"/>
+    <!-- Box left face -->
+    <path d="M-55,-35 L-55,25 L0,55 L0,-5 Z" fill="none" stroke="#c8964a" stroke-width="2.5" opacity="0.5"/>
+    <path d="M-55,-35 L-55,25 L0,55 L0,-5 Z" fill="#c8964a" opacity="0.06"/>
+    <!-- Tape hanging on right -->
+    <path d="M42,-28 L55,-20 L55,-10 L48,-14" fill="#dbb870" opacity="0.2"/>
+    <!-- Fragile symbol on left face -->
+    <g transform="translate(-30, 15)">
+      <!-- Glass outline -->
+      <path d="M-8,-12 L-4,-12 L-6,0 L-10,0 Z" fill="none" stroke="#8896aa" stroke-width="1.5" opacity="0.4"/>
+      <path d="M0,-12 L8,-12 L10,0 L6,0 Z" fill="none" stroke="#8896aa" stroke-width="1.5" opacity="0.4"/>
+      <!-- Crack -->
+      <path d="M-2,-10 L1,-4 L-1,2" fill="none" stroke="#8896aa" stroke-width="1.5" opacity="0.4"/>
+    </g>
+  </g>
+  <!-- Text -->
+  <text x="300" y="378" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="72" font-weight="900" letter-spacing="5" fill="#d4a032">CARGO</text>
+  <text x="300" y="450" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="68" font-weight="800" letter-spacing="3" fill="#e8eef1">CLAIMS</text>
+  <text x="300" y="505" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="400" letter-spacing="6" fill="#8896aa">SARAH HAMMOND</text>
+</svg>

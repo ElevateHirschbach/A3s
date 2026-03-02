@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="40%" stop-color="#162138"/>
+      <stop offset="80%" stop-color="#14283a"/>
+      <stop offset="100%" stop-color="#1a3030"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#d4a032"/>
+      <stop offset="100%" stop-color="#e8b84a"/>
+    </linearGradient>
+    <linearGradient id="corner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d4a032"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="600" height="600" rx="36" fill="url(#bg)"/>
+  <rect x="32" y="0" width="536" height="6" fill="url(#gold)" rx="0"/>
+  <rect x="0" y="0" width="6" height="200" fill="url(#corner)" rx="0"/>
+  <!-- Clipboard icon -->
+  <g transform="translate(300,190)" filter="url(#shadow)">
+    <!-- Clipboard body -->
+    <rect x="-45" y="-60" width="90" height="120" rx="6" fill="none" stroke="#8896aa" stroke-width="3" opacity="0.55"/>
+    <!-- Clip at top -->
+    <rect x="-18" y="-70" width="36" height="16" rx="4" fill="#d4a032" opacity="0.6"/>
+    <!-- Checklist lines -->
+    <!-- Row 1 - checked -->
+    <rect x="-32" y="-38" width="14" height="14" rx="3" fill="none" stroke="#3cc8a0" stroke-width="2" opacity="0.6"/>
+    <path d="M-29,-32 l4,4 l7,-8" fill="none" stroke="#3cc8a0" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-10" y1="-31" x2="32" y2="-31" stroke="#8896aa" stroke-width="2" opacity="0.35" stroke-linecap="round"/>
+    <!-- Row 2 - checked -->
+    <rect x="-32" y="-14" width="14" height="14" rx="3" fill="none" stroke="#3cc8a0" stroke-width="2" opacity="0.6"/>
+    <path d="M-29,-8 l4,4 l7,-8" fill="none" stroke="#3cc8a0" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-10" y1="-7" x2="32" y2="-7" stroke="#8896aa" stroke-width="2" opacity="0.35" stroke-linecap="round"/>
+    <!-- Row 3 - checked -->
+    <rect x="-32" y="10" width="14" height="14" rx="3" fill="none" stroke="#3cc8a0" stroke-width="2" opacity="0.6"/>
+    <path d="M-29,16 l4,4 l7,-8" fill="none" stroke="#3cc8a0" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="-10" y1="17" x2="32" y2="17" stroke="#8896aa" stroke-width="2" opacity="0.35" stroke-linecap="round"/>
+    <!-- Row 4 - unchecked -->
+    <rect x="-32" y="34" width="14" height="14" rx="3" fill="none" stroke="#8896aa" stroke-width="2" opacity="0.4"/>
+    <line x1="-10" y1="41" x2="32" y2="41" stroke="#8896aa" stroke-width="2" opacity="0.25" stroke-linecap="round"/>
+    <!-- Wrench accent -->
+    <g transform="translate(52,-15) rotate(30)">
+      <rect x="-4" y="-30" width="8" height="35" rx="2" fill="none" stroke="#8896aa" stroke-width="2.5" opacity="0.45"/>
+      <circle cx="0" cy="-34" r="10" fill="none" stroke="#8896aa" stroke-width="2.5" opacity="0.45"/>
+      <rect x="-3" y="-28" width="6" height="8" fill="#162138" opacity="0.8"/>
+    </g>
+    <!-- Gear accent -->
+    <g transform="translate(-55, 35)">
+      <circle cx="0" cy="0" r="14" fill="none" stroke="#8896aa" stroke-width="2" opacity="0.4"/>
+      <circle cx="0" cy="0" r="6" fill="none" stroke="#8896aa" stroke-width="2" opacity="0.4"/>
+      <line x1="0" y1="-16" x2="0" y2="-12" stroke="#8896aa" stroke-width="3" opacity="0.4"/>
+      <line x1="0" y1="12" x2="0" y2="16" stroke="#8896aa" stroke-width="3" opacity="0.4"/>
+      <line x1="-16" y1="0" x2="-12" y2="0" stroke="#8896aa" stroke-width="3" opacity="0.4"/>
+      <line x1="12" y1="0" x2="16" y2="0" stroke="#8896aa" stroke-width="3" opacity="0.4"/>
+    </g>
+  </g>
+  <!-- Text -->
+  <text x="300" y="375" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="62" font-weight="900" letter-spacing="3" fill="#d4a032">PRE-TRIP</text>
+  <text x="300" y="448" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="58" font-weight="800" letter-spacing="2" fill="#e8eef1">INSPECTIONS</text>
+  <text x="300" y="505" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="26" font-weight="400" letter-spacing="6" fill="#8896aa">ANDY PETERS</text>
+</svg>
