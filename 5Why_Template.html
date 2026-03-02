@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Why Root Cause Analysis</title>
+    <style>
+        @font-face { font-family: 'Gilroy'; font-weight: 400; src: local('Gilroy Regular'), local('Gilroy-Regular'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 700; src: local('Gilroy Bold'), local('Gilroy-Bold'); }
+        @font-face { font-family: 'Gilroy'; font-weight: 800; src: local('Gilroy ExtraBold'), local('Gilroy-ExtraBold'); }
+    </style>
+    <style>
+        :root {
+            --why1: #1e3a5f;
+            --why2: #2a5078;
+            --why3: #366690;
+            --why4: #d47b1a;
+            --why5: #c0392b;
+            --root-green: #22803a;
+            --text-primary: #1a1a1a;
+            --text-secondary: #374151;
+            --hirschbach-dark: #2b2b2b;
+        }
+        @page { size: A3 landscape; margin: 6mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Gilroy', 'Inter', -apple-system, sans-serif;
+            background: #e8e8e8; color: var(--text-primary);
+            font-size: 11pt; line-height: 1.4;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        }
+
+        /* ── TOOLBAR ── */
+        .toolbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white; padding: 10px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25); font-size: 10pt;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 16px; }
+        .toolbar-left .tb-title { font-weight: 800; font-size: 13pt; letter-spacing: -0.3px; }
+        .toolbar-left .tb-hint { font-size: 9pt; opacity: 0.65; }
+        .toolbar-right { display: flex; align-items: center; gap: 10px; }
+        .toolbar button {
+            padding: 7px 18px; border: none; border-radius: 6px;
+            font-family: inherit; font-weight: 700; font-size: 10pt;
+            cursor: pointer; transition: all 0.15s ease;
+        }
+        .btn-print { background: #22c55e; color: white; }
+        .btn-print:hover { background: #16a34a; transform: translateY(-1px); }
+        .btn-save { background: #3b82f6; color: white; }
+        .btn-save:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-clear { background: #64748b; color: white; }
+        .btn-clear:hover { background: #475569; }
+
+        .page-wrap { display: flex; justify-content: center; padding: 60px 0 40px; }
+        @media print {
+            .toolbar { display: none !important; }
+            .page-wrap { padding: 0; }
+            body { background: white; }
+        }
+
+        /* ── A3 CONTAINER ── */
+        .a3 {
+            width: 420mm; min-height: 297mm;
+            padding: 5mm; background: white;
+            display: flex; flex-direction: column; gap: 2mm;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-bottom: 2mm; border-bottom: 2.5px solid var(--hirschbach-dark);
+        }
+        .header-left { display: flex; align-items: center; gap: 4mm; }
+        .logo-box {
+            width: 18mm; height: 18mm;
+            background: linear-gradient(135deg, var(--why1), var(--why5));
+            border-radius: 2mm; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 8pt; text-align: center;
+        }
+        .title-area h1 { font-size: 22pt; font-weight: 800; letter-spacing: -0.5px; min-width: 100mm; }
+        .title-area .subtitle { font-size: 10pt; color: var(--text-secondary); margin-top: 0.5mm; }
+        .header-right { text-align: right; font-size: 9pt; color: var(--text-secondary); }
+        .header-right .date { font-weight: 600; font-size: 10pt; color: var(--text-primary); }
+
+        /* ── INFO BAR ── */
+        .info-bar {
+            display: grid; grid-template-columns: repeat(6, 1fr);
+            gap: 1mm; padding: 1.5mm 0;
+        }
+        .info-item { font-size: 8pt; }
+        .info-item label { font-weight: 700; color: #6b7280; text-transform: uppercase; font-size: 6.5pt; letter-spacing: 0.5px; display: block; }
+        .info-item span { font-size: 9pt; color: var(--text-primary); }
+
+        /* ── MAIN LAYOUT ── */
+        .main-body {
+            flex: 1; display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3mm;
+        }
+
+        /* ── LEFT COLUMN: Problem + 5 Whys ── */
+        .left-col { display: flex; flex-direction: column; gap: 2mm; }
+
+        /* Problem Statement */
+        .problem-box {
+            background: #f8f9fa; border: 2px solid var(--hirschbach-dark);
+            border-radius: 2mm; padding: 3mm; position: relative;
+        }
+        .problem-box .box-label {
+            position: absolute; top: -3mm; left: 3mm; background: var(--hirschbach-dark);
+            color: white; font-size: 7.5pt; font-weight: 800; padding: 0.5mm 3mm;
+            border-radius: 1mm; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .problem-box .problem-text {
+            min-height: 14mm; font-size: 11pt; padding: 2mm 1mm 1mm;
+            color: var(--text-primary);
+        }
+        .problem-hint {
+            font-size: 7pt; color: #9ca3af; margin-top: 1mm; font-style: italic;
+        }
+
+        /* 5 Why Staircase */
+        .why-chain { flex: 1; display: flex; flex-direction: column; gap: 0; }
+
+        .why-step {
+            display: grid; grid-template-columns: auto 1fr;
+            gap: 0; position: relative;
+        }
+
+        .why-marker {
+            width: 20mm; display: flex; flex-direction: column;
+            align-items: center; padding-top: 2mm;
+        }
+        .why-badge {
+            width: 13mm; height: 13mm; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 9pt;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); position: relative; z-index: 2;
+        }
+        .why-badge.w1 { background: var(--why1); }
+        .why-badge.w2 { background: var(--why2); }
+        .why-badge.w3 { background: var(--why3); }
+        .why-badge.w4 { background: var(--why4); }
+        .why-badge.w5 { background: var(--why5); }
+        .why-line {
+            width: 2px; flex: 1; background: #d1d5db; margin: 1mm 0;
+        }
+        .why-step:last-child .why-line { display: none; }
+
+        .why-card {
+            border-left: 3px solid #ccc; background: #f9fafb;
+            border-radius: 0 2mm 2mm 0; padding: 2.5mm 3mm;
+            margin-bottom: 1.5mm; position: relative;
+        }
+        .why-card.w1 { border-left-color: var(--why1); }
+        .why-card.w2 { border-left-color: var(--why2); }
+        .why-card.w3 { border-left-color: var(--why3); }
+        .why-card.w4 { border-left-color: var(--why4); }
+        .why-card.w5 { border-left-color: var(--why5); background: #fef2f2; }
+
+        .why-label {
+            font-size: 7pt; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 0.5mm;
+        }
+        .why-label.w1 { color: var(--why1); }
+        .why-label.w2 { color: var(--why2); }
+        .why-label.w3 { color: var(--why3); }
+        .why-label.w4 { color: var(--why4); }
+        .why-label.w5 { color: var(--why5); }
+
+        .symptom-tag {
+            display: inline-block; font-size: 6pt; padding: 0.3mm 2mm;
+            border-radius: 1mm; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.3px; margin-left: 2mm; vertical-align: middle;
+        }
+        .tag-symptom { background: #fef3c7; color: #92400e; }
+        .tag-getting-closer { background: #fed7aa; color: #9a3412; }
+        .tag-root { background: #dcfce7; color: #166534; }
+
+        .why-prompt {
+            font-size: 8pt; font-weight: 700; color: #6b7280;
+            font-style: italic; margin-bottom: 0.5mm;
+        }
+        .why-answer {
+            min-height: 10mm; font-size: 10pt; color: var(--text-primary);
+        }
+
+        /* ── RIGHT COLUMN: Root Cause + Countermeasure + Actions ── */
+        .right-col { display: flex; flex-direction: column; gap: 2mm; }
+
+        /* Root Cause Summary */
+        .root-cause-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid var(--root-green); border-radius: 2mm;
+            padding: 3mm; position: relative;
+        }
+        .root-cause-box .box-label {
+            position: absolute; top: -3mm; left: 3mm; background: var(--root-green);
+            color: white; font-size: 7.5pt; font-weight: 800; padding: 0.5mm 3mm;
+            border-radius: 1mm; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .root-icon { font-size: 16pt; margin-bottom: 1mm; }
+        .root-statement {
+            font-size: 7.5pt; font-weight: 800; color: var(--root-green);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1mm;
+        }
+        .root-text { min-height: 16mm; font-size: 11pt; padding: 1mm; }
+
+        /* Therefore / Countermeasure */
+        .therefore-box {
+            background: #fffbeb; border: 2px solid #f59e0b;
+            border-radius: 2mm; padding: 3mm; position: relative;
+        }
+        .therefore-box .box-label {
+            position: absolute; top: -3mm; left: 3mm; background: #f59e0b;
+            color: white; font-size: 7.5pt; font-weight: 800; padding: 0.5mm 3mm;
+            border-radius: 1mm; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .therefore-statement {
+            font-size: 7.5pt; font-weight: 800; color: #92400e;
+            margin-bottom: 1mm;
+        }
+        .therefore-text { min-height: 16mm; font-size: 11pt; padding: 1mm; }
+
+        /* Symptom vs Root visual */
+        .insight-box {
+            background: #f1f5f9; border-radius: 2mm; padding: 3mm;
+            border: 1.5px dashed #94a3b8;
+        }
+        .insight-title {
+            font-size: 8pt; font-weight: 800; color: var(--why1);
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2mm;
+            text-align: center;
+        }
+        .insight-grid {
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 2mm; align-items: start;
+        }
+        .insight-col { text-align: center; }
+        .insight-col-title {
+            font-size: 7pt; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.3px; padding: 1mm 2mm; border-radius: 1mm;
+            margin-bottom: 1.5mm; display: inline-block;
+        }
+        .symptoms-title { background: #fef3c7; color: #92400e; }
+        .root-title { background: #dcfce7; color: #166534; }
+        .insight-example {
+            font-size: 7.5pt; color: var(--text-secondary); line-height: 1.6;
+            text-align: left; padding: 0 1mm;
+        }
+        .insight-example .ex-bad { color: #dc2626; }
+        .insight-example .ex-good { color: #16a34a; font-weight: 600; }
+        .insight-arrow {
+            font-size: 16pt; color: #94a3b8; display: flex;
+            align-items: center; padding-top: 8mm;
+        }
+
+        /* Action Table */
+        .action-section {
+            flex: 1; display: flex; flex-direction: column;
+        }
+        .action-header {
+            background: var(--hirschbach-dark); color: white;
+            font-size: 8pt; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 1.5mm 3mm; border-radius: 2mm 2mm 0 0;
+        }
+        .action-table {
+            width: 100%; border-collapse: collapse; font-size: 9pt; flex: 1;
+        }
+        .action-table th {
+            background: #f1f5f9; font-weight: 700; font-size: 7.5pt;
+            text-transform: uppercase; letter-spacing: 0.3px;
+            padding: 1.5mm 2mm; text-align: left; border: 0.5px solid #d1d5db;
+            color: #4b5563;
+        }
+        .action-table td {
+            padding: 1.5mm 2mm; border: 0.5px solid #e5e7eb;
+            vertical-align: top; min-height: 8mm;
+        }
+        .action-table tr:nth-child(even) td { background: #fafafa; }
+
+        .status-cell {
+            font-size: 7.5pt; font-weight: 700; text-align: center;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 1.5mm; border-top: 1.5px solid #e5e7eb;
+            font-size: 7pt; color: #9ca3af;
+        }
+
+        /* ── EDITABLE ── */
+        [contenteditable="true"] {
+            outline: none; border-radius: 1px;
+            transition: background 0.15s, box-shadow 0.15s;
+        }
+        [contenteditable="true"]:hover { background: rgba(59,130,246,0.04); }
+        [contenteditable="true"]:focus {
+            background: rgba(59,130,246,0.06);
+            box-shadow: inset 0 0 0 1.5px rgba(59,130,246,0.25);
+        }
+        [contenteditable="true"]:empty::before {
+            content: attr(data-ph); color: #c0c0c0; font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── TOOLBAR ── -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <span class="tb-title">5 Why Root Cause Analysis</span>
+            <span class="tb-hint">Click any field to edit · All fields save with the file</span>
+        </div>
+        <div class="toolbar-right">
+            <button class="btn-clear" onclick="clearAll()">↺ Reset All</button>
+            <button class="btn-save" onclick="saveHTML()">💾 Save HTML</button>
+            <button class="btn-print" onclick="window.print()">🖨 Print A3</button>
+        </div>
+    </div>
+
+    <div class="page-wrap">
+        <div class="a3">
+
+            <!-- ══ HEADER ══ -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="logo-box">5<br>WHY</div>
+                    <div class="title-area">
+                        <h1 contenteditable="true">5 Why Title — Your Problem</h1>
+                        <div class="subtitle" contenteditable="true">Root Cause Analysis · Stop Treating Symptoms</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date" contenteditable="true">Date: MM/DD/YYYY</div>
+                    <div contenteditable="true">Facilitator: Name</div>
+                    <div contenteditable="true">Department: Dept</div>
+                </div>
+            </div>
+
+            <!-- ══ INFO BAR ══ -->
+            <div class="info-bar">
+                <div class="info-item"><label>Process / Area</label><span contenteditable="true" data-ph="e.g. Cargo Claims">Process area</span></div>
+                <div class="info-item"><label>Problem Owner</label><span contenteditable="true" data-ph="Name">Name</span></div>
+                <div class="info-item"><label>Team Members</label><span contenteditable="true" data-ph="Names">Names</span></div>
+                <div class="info-item"><label>Date Started</label><span contenteditable="true" data-ph="MM/DD/YYYY">MM/DD/YYYY</span></div>
+                <div class="info-item"><label>Target Completion</label><span contenteditable="true" data-ph="MM/DD/YYYY">MM/DD/YYYY</span></div>
+                <div class="info-item"><label>Related A3 / PDCA</label><span contenteditable="true" data-ph="Link or title">None</span></div>
+            </div>
+
+            <!-- ══ MAIN BODY ══ -->
+            <div class="main-body">
+
+                <!-- ── LEFT: Problem + 5 Whys ── -->
+                <div class="left-col">
+
+                    <!-- Problem Statement -->
+                    <div class="problem-box">
+                        <div class="box-label">🔍 Define the Problem</div>
+                        <div class="problem-text" contenteditable="true" data-ph="Describe the problem clearly and specifically. State WHAT is happening, not WHY. Use data if possible (e.g. 'Cargo claims increased 18% in Q1 vs prior year')."></div>
+                        <div class="problem-hint">Tip: Describe just the problem — not causes or solutions. Be specific. Use numbers when you can.</div>
+                    </div>
+
+                    <!-- 5 Why Staircase -->
+                    <div class="why-chain">
+
+                        <!-- WHY 1 -->
+                        <div class="why-step">
+                            <div class="why-marker">
+                                <div class="why-badge w1">W1</div>
+                                <div class="why-line"></div>
+                            </div>
+                            <div class="why-card w1">
+                                <div class="why-label w1">Why #1 — First Layer <span class="symptom-tag tag-symptom">Symptom</span></div>
+                                <div class="why-prompt">Why is this problem happening?</div>
+                                <div class="why-answer" contenteditable="true" data-ph="Because… (describe the primary cause you observe — this is usually a symptom, not the root cause)"></div>
+                            </div>
+                        </div>
+
+                        <!-- WHY 2 -->
+                        <div class="why-step">
+                            <div class="why-marker">
+                                <div class="why-badge w2">W2</div>
+                                <div class="why-line"></div>
+                            </div>
+                            <div class="why-card w2">
+                                <div class="why-label w2">Why #2 — Dig Deeper <span class="symptom-tag tag-symptom">Symptom</span></div>
+                                <div class="why-prompt">Why is that happening? (Take your Why #1 answer and ask why again)</div>
+                                <div class="why-answer" contenteditable="true" data-ph="Because… (look past the surface — why does the Why #1 condition exist?)"></div>
+                            </div>
+                        </div>
+
+                        <!-- WHY 3 -->
+                        <div class="why-step">
+                            <div class="why-marker">
+                                <div class="why-badge w3">W3</div>
+                                <div class="why-line"></div>
+                            </div>
+                            <div class="why-card w3">
+                                <div class="why-label w3">Why #3 — Getting Closer <span class="symptom-tag tag-getting-closer">Getting Closer</span></div>
+                                <div class="why-prompt">Why is that happening? (Push past the obvious — challenge your assumptions)</div>
+                                <div class="why-answer" contenteditable="true" data-ph="Because… (you're starting to move from symptoms to systemic issues)"></div>
+                            </div>
+                        </div>
+
+                        <!-- WHY 4 -->
+                        <div class="why-step">
+                            <div class="why-marker">
+                                <div class="why-badge w4">W4</div>
+                                <div class="why-line"></div>
+                            </div>
+                            <div class="why-card w4">
+                                <div class="why-label w4">Why #4 — Near the Root <span class="symptom-tag tag-getting-closer">Getting Closer</span></div>
+                                <div class="why-prompt">Why is that happening? (Think process, system, or behavior — not people)</div>
+                                <div class="why-answer" contenteditable="true" data-ph="Because… (is this something a process change could fix? You're almost there)"></div>
+                            </div>
+                        </div>
+
+                        <!-- WHY 5 -->
+                        <div class="why-step">
+                            <div class="why-marker">
+                                <div class="why-badge w5">W5</div>
+                            </div>
+                            <div class="why-card w5">
+                                <div class="why-label w5">Why #5 — The Root Cause <span class="symptom-tag tag-root">✓ Root Cause</span></div>
+                                <div class="why-prompt">Why is that happening? (This is the deepest reason — fixing THIS prevents the problem from recurring)</div>
+                                <div class="why-answer" contenteditable="true" data-ph="Because… (THIS is what you need to fix. If this is solved, the chain above collapses.)"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ── RIGHT: Root Cause + Countermeasure + Actions ── -->
+                <div class="right-col">
+
+                    <!-- Root Cause Confirmed -->
+                    <div class="root-cause-box">
+                        <div class="box-label">🌱 Root Cause Confirmed</div>
+                        <div class="root-statement">The true root cause of this problem is:</div>
+                        <div class="root-text" contenteditable="true" data-ph="Copy your Why #5 answer here. This is the single root cause you will solve. It should be something you can take action on — a process gap, a missing standard, a broken handoff, etc."></div>
+                    </div>
+
+                    <!-- Therefore / Countermeasure -->
+                    <div class="therefore-box">
+                        <div class="box-label">⚡ Therefore, If We…</div>
+                        <div class="therefore-statement">The countermeasure that will eliminate the root cause:</div>
+                        <div class="therefore-text" contenteditable="true" data-ph="If we [specific action], then [the root cause goes away], which means [the original problem stops recurring]. Be specific — what exactly will change, and who will own it?"></div>
+                    </div>
+
+                    <!-- Symptom vs Root Cause Guide -->
+                    <div class="insight-box">
+                        <div class="insight-title">Am I Treating a Symptom or the Root Cause?</div>
+                        <div class="insight-grid">
+                            <div class="insight-col">
+                                <div class="insight-col-title symptoms-title">❌ Treating Symptoms</div>
+                                <div class="insight-example">
+                                    <span class="ex-bad">• "We need to retrain the drivers"</span><br>
+                                    <span class="ex-bad">• "We'll add more inspections"</span><br>
+                                    <span class="ex-bad">• "Let's send a reminder email"</span><br>
+                                    <span class="ex-bad">• "We fired the person responsible"</span><br><br>
+                                    These feel productive but the problem comes back because the <strong>system</strong> that created it is unchanged.
+                                </div>
+                            </div>
+                            <div class="insight-arrow">→</div>
+                            <div class="insight-col">
+                                <div class="insight-col-title root-title">✓ Fixing Root Causes</div>
+                                <div class="insight-example">
+                                    <span class="ex-good">• "The SOP doesn't cover this scenario — update it"</span><br>
+                                    <span class="ex-good">• "The checklist is missing a step — add it"</span><br>
+                                    <span class="ex-good">• "There's no feedback loop — build one"</span><br>
+                                    <span class="ex-good">• "The process allows this error — redesign it"</span><br><br>
+                                    These change the <strong>system</strong> so the problem <strong>can't</strong> happen again, regardless of who's doing the work.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Items -->
+                    <div class="action-section">
+                        <div class="action-header">📋 Action Plan — Countermeasure Implementation</div>
+                        <table class="action-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:5%;">#</th>
+                                    <th style="width:40%;">Action / Task</th>
+                                    <th style="width:18%;">Owner</th>
+                                    <th style="width:15%;">Due Date</th>
+                                    <th style="width:12%;">Status</th>
+                                    <th style="width:10%;">Verified</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">1</td>
+                                    <td contenteditable="true" data-ph="Action to implement countermeasure"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">2</td>
+                                    <td contenteditable="true" data-ph="Action step"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">3</td>
+                                    <td contenteditable="true" data-ph="Action step"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">4</td>
+                                    <td contenteditable="true" data-ph="Action step"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">5</td>
+                                    <td contenteditable="true" data-ph="Action step"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align:center; font-weight:700; color:#6b7280;">6</td>
+                                    <td contenteditable="true" data-ph="Action step"></td>
+                                    <td contenteditable="true" data-ph="Name"></td>
+                                    <td contenteditable="true" data-ph="MM/DD"></td>
+                                    <td class="status-cell" contenteditable="true" data-ph="Not Started"></td>
+                                    <td style="text-align:center;" contenteditable="true" data-ph="☐"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Verification -->
+                    <div style="background: #f0f9ff; border: 1.5px solid #3b82f6; border-radius: 2mm; padding: 2.5mm;">
+                        <div style="font-size: 7.5pt; font-weight: 800; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1mm;">🔁 Verify — Did It Work?</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; font-size: 9pt;">
+                            <div>
+                                <div style="font-size: 7pt; font-weight: 700; color: #6b7280;">How will you measure success?</div>
+                                <div contenteditable="true" data-ph="Metric or observation that proves the root cause is gone" style="min-height: 8mm; padding: 1mm;"></div>
+                            </div>
+                            <div>
+                                <div style="font-size: 7pt; font-weight: 700; color: #6b7280;">Follow-up check date & result</div>
+                                <div contenteditable="true" data-ph="Date: ___  Result: Problem resolved? Yes / No — if No, re-run 5 Whys" style="min-height: 8mm; padding: 1mm;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ══ FOOTER ══ -->
+            <div class="footer">
+                <span>Elevate · Hirschbach Motor Lines · 5 Why Root Cause Analysis</span>
+                <span>Stop treating symptoms. Fix the system.</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    function saveHTML() {
+        const name = prompt('Save as:', '5Why_Analysis');
+        if (!name) return;
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelector('.toolbar')?.remove();
+        const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = name.replace(/\.html$/i, '') + '.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+    function clearAll() {
+        if (!confirm('Reset all fields? This cannot be undone.')) return;
+        document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.textContent = '';
+        });
+    }
+    </script>
+
+</body>
+</html>
